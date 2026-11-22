@@ -13,6 +13,9 @@ const LOCAL_URLS = [
   `${GHPATH}/icon-192.png`,
   `${GHPATH}/icon-512.png`,
   `${GHPATH}/apple-touch-icon.png`
+  `${GHPATH}/icon-192-rules.png`,
+  `${GHPATH}/icon-512-rules.png`,
+  `${GHPATH}/apple-touch-icon-rules.png`
 ];
 
 // Seluruh aset SVG tile Mahjong & budijoe-pixel.svg
