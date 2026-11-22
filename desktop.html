@@ -1,0 +1,1600 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skor Mahjong TV — Sistem Bandung YDSP</title>
+    <link rel="icon" type="image/svg+xml" href="/skor-mahjong/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        mjbg: '#F9F5F1',
+                        mjgreen: '#08403C',
+                        mjaccent: '#0E5A54',
+                        mjlight: '#E6F2F1',
+                        mjgold: '#D49B35',
+                        mjdanger: '#C83E3B',
+                        mjtext: '#1A2E2C',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html, body {
+            background-color: #F9F5F1;
+            color: #1A2E2C;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Kontainer penuh layar TV 1920x1080 dengan margin aman TV Safe Area (Overscan <= 3x gap) */
+        .tv-shell {
+            width: 100%;
+            max-width: 1920px;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: clamp(16px, 2.1vw, 40px);
+            padding-right: clamp(16px, 2.1vw, 40px);
+        }
+
+        .tv-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: clamp(14px, 1.15vw, 22px);
+        }
+
+        .tv-player-name {
+            font-size: clamp(1.35rem, 2.2vw, 3.1rem);
+            line-height: 1.15;
+        }
+
+        .tv-player-score {
+            font-size: clamp(3.2rem, 6.4vw, 8.5rem);
+            line-height: 1;
+        }
+
+        .tv-wind-badge {
+            font-size: clamp(1.1rem, 1.85vw, 2.5rem);
+            line-height: 1.2;
+        }
+
+        .btn-shadow {
+            box-shadow: 0 6px 18px -4px rgba(8, 64, 60, 0.28);
+        }
+
+        /* Kedipan titik dua (:) setiap detik pada timer durasi HH:MM */
+        @keyframes colonBlink {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0.15; }
+        }
+        .colon-blink {
+            animation: colonBlink 1s infinite;
+            display: inline-block;
+        }
+
+        /* Animasi kilau & getar kartu saat skor berubah */
+        @keyframes cardFlashUp {
+            0% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.75), 0 12px 30px rgba(16, 185, 129, 0.35);
+                background-color: #ECFDF5;
+                transform: scale(1.015);
+            }
+            65% {
+                box-shadow: 0 0 0 14px rgba(16, 185, 129, 0), 0 10px 25px rgba(16, 185, 129, 0.18);
+                background-color: #F4FBF8;
+                transform: scale(1.005);
+            }
+            100% {
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+                background-color: #FFFFFF;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes cardFlashDown {
+            0% {
+                box-shadow: 0 0 0 0 rgba(200, 62, 59, 0.7), 0 12px 30px rgba(200, 62, 59, 0.3);
+                background-color: #FEF2F2;
+                transform: translateX(0);
+            }
+            15% { transform: translateX(-6px); }
+            30% { transform: translateX(6px); }
+            45% { transform: translateX(-4px); }
+            60% { transform: translateX(4px); }
+            100% {
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+                background-color: #FFFFFF;
+                transform: translateX(0);
+            }
+        }
+
+        .card-flash-up {
+            animation: cardFlashUp 1.4s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .card-flash-down {
+            animation: cardFlashDown 1.1s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        @keyframes scorePop {
+            0% { transform: scale(1); }
+            35% { transform: scale(1.16); }
+            70% { transform: scale(0.97); }
+            100% { transform: scale(1); }
+        }
+        .score-pop-anim {
+            animation: scorePop 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        @keyframes deltaPillPop {
+            0% { opacity: 0; transform: translateY(10px) scale(0.82); }
+            60% { opacity: 1; transform: translateY(-2px) scale(1.06); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .delta-pill-pop {
+            animation: deltaPillPop 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        /* Podium & Champion Final Screen */
+        @keyframes podiumReveal {
+            0% { opacity: 0; transform: translateY(18px) scale(0.97); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .podium-reveal {
+            opacity: 0;
+            animation: podiumReveal 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        .champion-card {
+            background: linear-gradient(135deg, #FFFDF7 0%, #FFF6DC 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes shimmerSweep {
+            0% { transform: translateX(-120%) skewX(-20deg); }
+            100% { transform: translateX(260%) skewX(-20deg); }
+        }
+        .champion-shimmer::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 45%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), transparent);
+            animation: shimmerSweep 2.8s infinite ease-in-out;
+            pointer-events: none;
+        }
+
+        #confetti-canvas {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 60;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-mjgreen selection:text-white">
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- Toast Notification -->
+    <div id="toastMsg" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-mjgreen text-white font-bold text-sm lg:text-base px-6 py-3 rounded-full shadow-2xl border border-mjgold/40 z-50 hidden transition-all"></div>
+
+    <!-- ========================================== -->
+    <!-- HEADER BAR (STICKY TOP, FULL 1920PX SHELL)  -->
+    <!-- ========================================== -->
+    <header class="sticky top-0 z-40 bg-mjgreen text-white shadow-lg border-b-2 border-mjgold/40">
+        <div class="tv-shell py-3 lg:py-3.5 flex items-center justify-between gap-4">
+	<!-- Brand Title -->
+            <div class="flex items-center space-x-3 lg:space-x-4 min-w-0">
+                <div class="w-10 h-10 lg:w-12 lg:h-12 rounded-2xl bg-white border-2 border-white flex items-center justify-center p-0 shadow shrink-0 overflow-hidden">
+                    <img src="https://raw.githubusercontent.com/budijoe/skor-mahjong/main/svg/44-joker-clown.svg" alt="Green Dragon" class="w-full h-full object-contain scale-120">
+                </div>
+                <div class="min-w-0">
+                    <h1 class="font-black text-lg lg:text-2xl xl:text-3xl tracking-tight leading-none truncate">
+                        SKOR MAHJONG <span class="text-mjgold">LIVE</span>
+                    </h1>
+                    <p class="text-[11px] lg:text-xs xl:text-sm text-white/75 font-semibold tracking-wide uppercase mt-0.5 truncate">
+                        Papan Skor Layar TV · Sistem Bandung YDSP · by budijoe
+                    </p>
+                </div>
+            </div>
+
+            <!-- Status Badges & Controls -->
+            <div class="flex items-center space-x-2.5 lg:space-x-3.5 shrink-0">
+                <!-- Live Running Duration Timer (HH:MM) -->
+                <div id="live-duration-badge" class="hidden bg-white/10 border border-white/20 px-3.5 lg:px-5 py-1.5 lg:py-2 rounded-2xl flex items-center space-x-2 shadow-inner">
+                    <i class="fa-regular fa-clock text-mjgold text-sm lg:text-lg"></i>
+                    <span class="font-mono font-black text-lg lg:text-2xl xl:text-3xl tracking-wider text-white">
+                        <span id="duration-hh">00</span><span class="colon-blink text-mjgold">:</span><span id="duration-mm">00</span>
+                    </span>
+                </div>
+
+                <!-- Online Room Badge -->
+                <button type="button" id="room-badge" onclick="copyRoomCode()" title="Klik untuk menyalin Kode Meja"
+                    class="hidden bg-white/15 hover:bg-white/25 px-3.5 lg:px-4 py-1.5 lg:py-2 rounded-2xl text-xs lg:text-base font-extrabold border border-white/25 flex items-center space-x-2 transition">
+                    <span id="room-status-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+                    <span class="text-white/80 font-bold">MEJA</span>
+                    <span id="header-room-code" class="font-mono tracking-widest text-mjgold text-base lg:text-xl">000000</span>
+                    <span id="header-room-role" class="text-[10px] lg:text-xs bg-white/20 px-2 py-0.5 rounded uppercase">TV LIVE</span>
+                </button>
+
+                <!-- Round Counter Badge -->
+                <div id="round-counter-badge" class="hidden bg-mjgold text-mjgreen px-3.5 lg:px-5 py-1.5 lg:py-2 rounded-2xl font-black text-sm lg:text-xl shadow">
+                    Ronde <span id="current-round-num">1</span>
+                </div>
+
+                <!-- Sound Toggle -->
+                <button type="button" onclick="toggleTvAudio()" title="Aktif/Nonaktifkan Suara Notifikasi Skor"
+                    class="bg-white/10 hover:bg-white/20 border border-white/20 px-3 lg:px-4 py-2 rounded-2xl text-xs lg:text-sm font-bold flex items-center space-x-1.5 transition">
+                    <i id="audio-toggle-icon" class="fa-solid fa-volume-high text-mjgold"></i>
+                    <span id="audio-toggle-label" class="hidden sm:inline">Suara</span>
+                </button>
+
+                <!-- Fullscreen Toggle -->
+                <button type="button" onclick="toggleTvFullscreen()" title="Layar Penuh (Fullscreen)"
+                    class="bg-white/10 hover:bg-white/20 border border-white/20 px-3 lg:px-4 py-2 rounded-2xl text-xs lg:text-sm font-bold flex items-center space-x-1.5 transition">
+                    <i id="fullscreen-icon" class="fa-solid fa-expand text-white"></i>
+                    <span class="hidden xl:inline">Layar Penuh</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ========================================== -->
+    <!-- MAIN CONTENT CONTAINER                     -->
+    <!-- ========================================== -->
+    <main class="flex-grow flex flex-col justify-center py-4 lg:py-5">
+
+        <!-- ========================================== -->
+        <!-- SCREEN 1: SETUP / GABUNG ROOM TV           -->
+        <!-- ========================================== -->
+        <section id="screen-setup" class="tv-shell">
+            <div class="max-w-2xl mx-auto bg-white rounded-3xl p-7 lg:p-10 shadow-xl border-2 border-mjgreen/15 space-y-6">
+                <div class="text-center space-y-2">
+                    <div class="inline-flex items-center space-x-2 bg-mjlight text-mjgreen px-4 py-1.5 rounded-full text-xs lg:text-sm font-extrabold uppercase tracking-wider">
+                        <i class="fa-solid fa-tv"></i>
+                        <span>Mode Layar TV / Monitor</span>
+                    </div>
+                    <h2 class="text-2xl lg:text-4xl font-black text-mjgreen tracking-tight">
+                        Hubungkan ke Meja Host
+                    </h2>
+                    <p class="text-sm lg:text-base text-mjtext/75">
+                        Masukkan <strong>6 digit Kode Meja</strong> yang muncul di HP Host setelah tombol <strong>Buat Meja</strong> ditekan.
+                    </p>
+                </div>
+
+                <!-- Input Kode Sync Langsung -->
+                <div class="space-y-3">
+                    <input type="text" id="direct-room-input" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="123456"
+                        oninput="this.value = this.value.replace(/[^0-9]/g, ''); hideDirectJoinError();"
+                        onkeydown="if(event.key==='Enter') submitDirectJoinRoom()"
+                        class="w-full text-center text-4xl lg:text-5xl font-black tracking-[0.3em] py-4 lg:py-5 rounded-2xl border-2 border-mjgreen/40 focus:border-mjgreen focus:ring-4 focus:ring-mjgreen/20 outline-none bg-mjbg text-mjgreen font-mono">
+                    <p id="direct-join-error" class="hidden text-center text-sm font-bold text-mjdanger">
+                        <i class="fa-solid fa-circle-exclamation mr-1"></i><span></span>
+                    </p>
+                    <button type="button" id="btn-direct-join" onclick="submitDirectJoinRoom()"
+                        class="w-full bg-mjgreen hover:bg-mjaccent text-white font-black py-4 px-6 rounded-2xl btn-shadow transition flex items-center justify-center space-x-3 text-lg lg:text-xl">
+                        <i class="fa-solid fa-tower-broadcast"></i>
+                        <span>GABUNG & TAMPILKAN SKOR LIVE</span>
+                    </button>
+                </div>
+
+                <!-- Pembatas Mode Host Mandiri di PC/TV -->
+                <div class="relative flex py-1 items-center">
+                    <div class="flex-grow border-t border-mjgreen/15"></div>
+                    <span class="flex-shrink mx-4 text-xs font-extrabold uppercase tracking-wider text-mjgreen/55">atau Buat Meja Online Baru dari PC ini</span>
+                    <div class="flex-grow border-t border-mjgreen/15"></div>
+                </div>
+
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
+                    <input type="text" id="p1-input" value="Budi" maxlength="16" placeholder="Timur"
+                        class="px-3 py-2.5 rounded-xl border border-mjgreen/25 bg-mjbg/50 font-bold text-sm text-mjgreen text-center focus:border-mjgreen outline-none">
+                    <input type="text" id="p2-input" value="Joseph" maxlength="16" placeholder="Selatan"
+                        class="px-3 py-2.5 rounded-xl border border-mjgreen/25 bg-mjbg/50 font-bold text-sm text-mjgreen text-center focus:border-mjgreen outline-none">
+                    <input type="text" id="p3-input" value="Hansen" maxlength="16" placeholder="Barat"
+                        class="px-3 py-2.5 rounded-xl border border-mjgreen/25 bg-mjbg/50 font-bold text-sm text-mjgreen text-center focus:border-mjgreen outline-none">
+                    <input type="text" id="p4-input" value="Ramses" maxlength="16" placeholder="Utara"
+                        class="px-3 py-2.5 rounded-xl border border-mjgreen/25 bg-mjbg/50 font-bold text-sm text-mjgreen text-center focus:border-mjgreen outline-none">
+                </div>
+
+                <button type="button" id="btn-create-room" onclick="createOnlineRoom()"
+                    class="w-full bg-mjlight hover:bg-emerald-100 text-mjgreen border-2 border-mjgreen font-extrabold py-3 px-4 rounded-2xl transition flex items-center justify-center space-x-2 text-sm lg:text-base">
+                    <i class="fa-solid fa-plus-circle"></i>
+                    <span>Buat Meja Sebagai Host di PC Ini</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- SCREEN 2: LIVE SCOREBOARD (1920x1080)      -->
+        <!-- ========================================== -->
+        <section id="screen-dashboard" class="hidden tv-shell flex-grow flex flex-col justify-between gap-4 lg:gap-5">
+            <!-- Top Info Strip: Angin Meja & Bandar Saat Ini -->
+            <div class="bg-white rounded-3xl px-5 lg:px-8 py-3 lg:py-4 shadow-md border border-mjgreen/15 flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center space-x-4 lg:space-x-6">
+                    <div class="flex items-center space-x-2.5">
+                        <span class="text-xs lg:text-base font-extrabold uppercase tracking-wider text-mjtext/60">Angin Meja:</span>
+                        <span id="round-wind-display" class="bg-mjlight text-mjgreen font-medium text-xl lg:text-3xl px-4 py-1 rounded-2xl shadow-sm">
+                            東 Timur
+                        </span>
+                    </div>
+                    <div class="h-7 w-px bg-mjgreen/15 hidden sm:block"></div>
+                    <div class="flex items-center space-x-2.5">
+                        <span class="text-xs lg:text-base font-extrabold uppercase tracking-wider text-mjtext/60">Bandar (東):</span>
+                        <span id="current-dealer-display" class="font-black text-lg lg:text-2xl xl:text-3xl text-mjgreen">
+                            -
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Status Sync & Tombol Keluar / Kontrol -->
+                <div class="flex items-center space-x-2.5 lg:space-x-3">
+                    <span id="viewer-mode-pill" class="bg-mjlight text-mjgreen border border-mjgreen/20 px-3.5 py-1.5 rounded-xl text-xs lg:text-sm font-extrabold flex items-center space-x-2">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                        <span>Sinkron Real-Time Host</span>
+                    </span>
+
+                    <!-- Host Controls (hanya tampil jika PC ini adalah Host) -->
+                    <div id="host-controls-panel" class="hidden flex items-center space-x-2">
+                        <button type="button" onclick="openRecordModal()" class="bg-mjgreen hover:bg-mjaccent text-white font-extrabold px-4 py-2 rounded-xl text-xs lg:text-sm transition">
+                            <i class="fa-solid fa-plus mr-1"></i>Catat Skor
+                        </button>
+                        <button type="button" onclick="recordDraw()" class="bg-mjlight hover:bg-emerald-100 text-mjgreen font-bold px-3.5 py-2 rounded-xl text-xs lg:text-sm border border-mjgreen/25 transition">
+                            Imbang
+                        </button>
+                        <button type="button" onclick="openFinishModal()" class="bg-mjgold hover:bg-amber-600 text-white font-extrabold px-3.5 py-2 rounded-xl text-xs lg:text-sm transition">
+                            Selesai
+                        </button>
+                    </div>
+
+                    <button type="button" onclick="leaveOnlineRoom()"
+                        class="bg-gray-100 hover:bg-red-50 text-gray-700 hover:text-mjdanger border border-gray-300 font-bold px-3.5 lg:px-4 py-1.5 lg:py-2 rounded-xl text-xs lg:text-sm transition flex items-center space-x-1.5">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span>Ganti Meja</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 4 KOTAK PEMAIN BERJEJER 1 BARIS (MAKSIMAL 1920PX) -->
+            <div id="scoreboard-cards" class="tv-cards-grid flex-grow items-stretch">
+                <!-- Diisi secara dinamis oleh renderScoreboard() -->
+            </div>
+
+            <!-- Bottom Strip: Riwayat Ronde Terakhir -->
+            <div class="bg-white rounded-3xl px-5 lg:px-7 py-3 lg:py-4 shadow-md border border-mjgreen/15">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-xs lg:text-base font-black uppercase tracking-wider text-mjgreen flex items-center space-x-2">
+                        <i class="fa-solid fa-clock-rotate-left text-mjgold"></i>
+                        <span>Riwayat Ronde Terakhir</span>
+                    </h3>
+                    <button type="button" id="btn-undo" onclick="undoLastRound()"
+                        class="hidden text-xs lg:text-sm font-bold text-mjdanger hover:underline">
+                        <i class="fa-solid fa-rotate-left mr-1"></i>Batalkan Ronde Terakhir
+                    </button>
+                </div>
+                <div id="history-container" class="grid grid-cols-1 lg:grid-cols-2 gap-2 max-h-36 overflow-y-auto pr-1">
+                    <p class="text-xs lg:text-sm text-center text-gray-400 py-2 italic col-span-full">Belum ada skor yang dicatat.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- SCREEN 3: FINAL RANKING / SELESAI          -->
+        <!-- ========================================== -->
+        <section id="screen-final" class="hidden tv-shell">
+            <div id="final-capture" class="max-w-4xl mx-auto bg-mjbg rounded-3xl p-6 lg:p-9 border-2 border-mjgold/40 shadow-xl space-y-6">
+                <div class="text-center space-y-1.5">
+                    <div class="inline-block bg-mjgreen text-mjgold font-black text-xs lg:text-sm px-4 py-1 rounded-full uppercase tracking-widest">
+                        Hasil Akhir Permainan
+                    </div>
+                    <h2 class="text-3xl lg:text-5xl font-black text-mjgreen tracking-tight">
+                        SKOR MAHJONG HARI INI
+                    </h2>
+                    <p class="text-sm lg:text-base font-bold text-mjgreen/80">
+                        <span id="final-date"></span> · Mulai <span id="final-start-time"></span> · Durasi <span id="final-duration"></span> · <span id="final-rounds"></span> Ronde
+                    </p>
+                </div>
+
+                <div id="final-ranking" class="space-y-3"></div>
+
+                <div class="grid grid-cols-2 gap-3 bg-white rounded-2xl p-4 border border-mjgreen/15 text-xs lg:text-base">
+                    <div>
+                        <span class="text-gray-500 font-semibold block">Tay Tertinggi:</span>
+                        <span id="final-biggest-hand" class="font-black text-mjgreen">-</span>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-gray-500 font-semibold block">Kemenangan Ronde Terbesar:</span>
+                        <span id="final-biggest-round" class="font-black text-mjgreen">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="max-w-4xl mx-auto mt-5 flex items-center justify-center gap-3">
+                <button type="button" onclick="saveFinal()" class="bg-mjgreen hover:bg-mjaccent text-white font-extrabold px-6 py-3 rounded-2xl btn-shadow text-sm lg:text-base transition">
+                    <i class="fa-solid fa-download mr-2"></i>Simpan Gambar Hasil
+                </button>
+                <button type="button" id="btn-final-leave-room" onclick="leaveOnlineRoom()" class="bg-white hover:bg-red-50 text-mjdanger border border-mjdanger/30 font-extrabold px-6 py-3 rounded-2xl text-sm lg:text-base transition">
+                    <i class="fa-solid fa-right-from-bracket mr-2"></i>Keluar / Ganti Meja
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- ========================================== -->
+    <!-- MODAL: CATAT SKOR (JIKA PC JADI HOST)      -->
+    <!-- ========================================== -->
+    <div id="modal-record" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-mjgreen/20 space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="font-black text-xl text-mjgreen">CATAT SKOR RONDE</h3>
+                <button onclick="closeRecordModal()" class="text-gray-400 hover:text-gray-700 text-xl"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="flex gap-2">
+                <div id="step-dot-1" class="flex-1 text-center font-bold text-sm pb-1 border-b-2 border-mjgreen text-mjgreen">1. Pemenang</div>
+                <div id="step-dot-2" class="flex-1 text-center font-semibold text-sm pb-1 border-b-2 border-gray-200 text-gray-400">2. Cara</div>
+                <div id="step-dot-3" class="flex-1 text-center font-semibold text-sm pb-1 border-b-2 border-gray-200 text-gray-400">3. Tay</div>
+            </div>
+            <div id="record-step-1" class="space-y-3">
+                <p class="text-sm font-semibold text-gray-600">Siapa yang menang ronde ini?</p>
+                <div id="winner-selection-grid" class="grid grid-cols-2 gap-2.5"></div>
+            </div>
+            <div id="record-step-2" class="hidden space-y-3">
+                <div id="selected-winner-badge" class="text-xs font-extrabold bg-mjlight text-mjgreen px-3 py-1.5 rounded-xl inline-block"></div>
+                <div class="grid grid-cols-2 gap-2.5">
+                    <button onclick="selectWinType('cumo')" class="p-4 rounded-xl border-2 border-mjgreen/25 hover:border-mjgreen font-bold text-mjgreen">🏆 Cu Mo</button>
+                    <button onclick="selectWinType('buangan')" class="p-4 rounded-xl border-2 border-mjgreen/25 hover:border-mjgreen font-bold text-mjgreen">🎯 Buangan</button>
+                </div>
+                <div id="discard-selector-container" class="hidden space-y-2 pt-2">
+                    <p class="text-xs font-bold text-gray-600">Buangan dari siapa?</p>
+                    <div id="discarder-selection-grid" class="grid grid-cols-3 gap-2"></div>
+                </div>
+                <button onclick="goToStep(1)" class="text-xs font-bold text-gray-500 hover:text-mjgreen">← Kembali</button>
+            </div>
+            <div id="record-step-3" class="hidden space-y-3">
+                <div id="summary-win-type" class="text-xs font-extrabold bg-mjlight text-mjgreen px-3 py-1.5 rounded-xl"></div>
+                <input type="number" id="win-points-input" min="5" placeholder="Berapa Tay? (Min 5)" oninput="hidePointsError()"
+                    class="w-full text-center text-2xl font-black py-3 rounded-xl border-2 border-mjgreen/30 focus:border-mjgreen outline-none">
+                <div class="grid grid-cols-6 gap-1.5">
+                    <button type="button" onclick="adjustWinPoints(-1)" class="py-2 rounded-lg bg-red-50 text-mjdanger font-bold text-xs">-1</button>
+                    <button type="button" onclick="adjustWinPoints(-5)" class="py-2 rounded-lg bg-red-50 text-mjdanger font-bold text-xs">-5</button>
+                    <button type="button" onclick="adjustWinPoints(-10)" class="py-2 rounded-lg bg-red-50 text-mjdanger font-bold text-xs">-10</button>
+                    <button type="button" onclick="adjustWinPoints(10)" class="py-2 rounded-lg bg-mjlight text-mjgreen font-bold text-xs">+10</button>
+                    <button type="button" onclick="adjustWinPoints(5)" class="py-2 rounded-lg bg-mjlight text-mjgreen font-bold text-xs">+5</button>
+                    <button type="button" onclick="adjustWinPoints(1)" class="py-2 rounded-lg bg-mjlight text-mjgreen font-bold text-xs">+1</button>
+                </div>
+                <p id="win-points-error" class="hidden text-xs font-bold text-mjdanger">Minimal kemenangan adalah 5 Tay.</p>
+                <div id="formula-preview" class="bg-mjbg p-3 rounded-xl text-xs text-gray-600 space-y-1"></div>
+                <div class="grid grid-cols-2 gap-2.5 pt-1">
+                    <button onclick="goToStep(2)" class="py-3 rounded-xl bg-gray-100 font-bold text-sm text-gray-700">Kembali</button>
+                    <button onclick="submitScore()" class="py-3 rounded-xl bg-mjgreen text-white font-extrabold text-sm btn-shadow">SIMPAN SKOR</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Selesai -->
+    <div id="modal-finish" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 text-center space-y-4 shadow-2xl">
+            <h3 class="font-black text-xl text-mjgreen">SELESAIKAN PERMAINAN?</h3>
+            <p class="text-sm text-gray-600">Rekap peringkat akhir akan ditampilkan di layar TV.</p>
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="closeFinishModal()" class="py-3 rounded-xl bg-gray-100 font-bold text-gray-700">Batal</button>
+                <button onclick="finishGame()" class="py-3 rounded-xl bg-mjgreen text-white font-bold">Ya, Selesai</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Screenshot library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <!-- Firebase Realtime Database Module -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+        import { getDatabase, ref, set, get, onValue, off, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBuAhFdYzb3eGFO8fNzL-0n_pIorCryhyM",
+            authDomain: "skor-mahjong.firebaseapp.com",
+            databaseURL: "https://skor-mahjong-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "skor-mahjong",
+            storageBucket: "skor-mahjong.firebasestorage.app",
+            messagingSenderId: "309152185233",
+            appId: "1:309152185233:web:1c76986697481d67d27830",
+            measurementId: "G-L60NDEK4M8"
+        };
+
+        const firebaseApp = initializeApp(firebaseConfig);
+        const db = getDatabase(firebaseApp);
+
+        let activeRoomRef = null;
+        let activeRoomListener = null;
+        let isFirebaseConnected = false;
+
+        // Sinkronisasi offset waktu server Firebase agar timer TV & HP Host 100% akurat
+        let serverTimeOffsetMs = 0;
+        const offsetRef = ref(db, '.info/serverTimeOffset');
+        onValue(offsetRef, (snap) => {
+            serverTimeOffsetMs = snap.val() || 0;
+        });
+        window.getSyncedNow = () => Date.now() + serverTimeOffsetMs;
+
+        // Pantau status koneksi Firebase Realtime Database
+        const connectedRef = ref(db, '.info/connected');
+        onValue(connectedRef, (snap) => {
+            isFirebaseConnected = snap.val() === true;
+            if (typeof window.updateRoomBadgeUI === 'function') {
+                window.updateRoomBadgeUI(isFirebaseConnected);
+            }
+        });
+
+        window.fbRoomService = {
+            isConnected() {
+                return isFirebaseConnected;
+            },
+            async generateUniqueCode() {
+                for (let attempt = 0; attempt < 8; attempt++) {
+                    const code = String(Math.floor(100000 + Math.random() * 900000));
+                    try {
+                        const snap = await get(ref(db, `rooms/${code}`));
+                        if (!snap.exists()) return code;
+                    } catch (e) {
+                        return code;
+                    }
+                }
+                return String(Math.floor(100000 + Math.random() * 900000));
+            },
+            async createRoom(code, gameState) {
+                const roomRef = ref(db, `rooms/${code}`);
+                await set(roomRef, {
+                    players: gameState.players,
+                    roundHistory: gameState.roundHistory || [],
+                    currentRound: gameState.currentRound || 1,
+                    startedAt: gameState.startedAt || (window.getSyncedNow ? window.getSyncedNow() : Date.now()),
+                    finishedAt: gameState.finishedAt || null,
+                    createdAt: serverTimestamp(),
+                    updatedAt: serverTimestamp()
+                });
+            },
+            async checkRoomExists(code) {
+                const snap = await get(ref(db, `rooms/${code}`));
+                return snap.exists() ? snap.val() : null;
+            },
+            async pushState(code, gameState) {
+                if (!code) return;
+                try {
+                    const roomRef = ref(db, `rooms/${code}`);
+                    await set(roomRef, {
+                        players: gameState.players,
+                        roundHistory: gameState.roundHistory || [],
+                        currentRound: gameState.currentRound || 1,
+                        startedAt: gameState.startedAt || (window.getSyncedNow ? window.getSyncedNow() : Date.now()),
+                        finishedAt: gameState.finishedAt || null,
+                        updatedAt: serverTimestamp()
+                    });
+                } catch (err) {
+                    console.error('Gagal sinkron ke Firebase:', err);
+                }
+            },
+            subscribeRoom(code, onDataCallback) {
+                this.unsubscribeRoom();
+                if (!code) return;
+                activeRoomRef = ref(db, `rooms/${code}`);
+                activeRoomListener = onValue(activeRoomRef, (snapshot) => {
+                    if (snapshot.exists()) {
+                        onDataCallback(snapshot.val());
+                    }
+                }, (err) => {
+                    console.error('Listener Firebase error:', err);
+                });
+            },
+            unsubscribeRoom() {
+                if (activeRoomRef && activeRoomListener) {
+                    off(activeRoomRef, 'value', activeRoomListener);
+                }
+                activeRoomRef = null;
+                activeRoomListener = null;
+            }
+        };
+
+        window.dispatchEvent(new Event('fb-ready'));
+    </script>
+
+    <!-- Application Script -->
+    <script>
+        const STORAGE_KEY = 'mahjong_ydsp_tv_state_v1';
+        const WINDS = [
+            { char: '東', name: 'Timur' },
+            { char: '南', name: 'Selatan' },
+            { char: '西', name: 'Barat' },
+            { char: '北', name: 'Utara' }
+        ];
+        // Urutan tampilan 4 pemain sejajar di layar TV
+        const TV_SEAT_ORDER = [0, 1, 2, 3];
+        const SEAT_ORDER = [0, 3, 1, 2];
+        const MIN_WIN_POINTS = 5;
+
+        let players = [];
+        let roundHistory = [];
+        let currentRound = 1;
+        let startedAt = null;
+        let finishedAt = null;
+
+        let roomCode = null;
+        let isHost = false;
+
+        // Melacak skor terakhir & perubahan skor terakhir secara permanen sampai ada perubahan baru
+        let lastKnownScores = null;
+        let activeScoreDeltas = [0, 0, 0, 0];
+
+        // ==========================================
+        // RUNNING DURATION TIMER (HH:MM, : BLINKING)
+        // Dihitung tepat sejak tombol "Buat Room" Host ditekan (startedAt di Firebase)
+        // ==========================================
+        let durationTimerInterval = null;
+
+        function updateLiveDurationDisplay() {
+            const badge = document.getElementById('live-duration-badge');
+            const hhEl = document.getElementById('duration-hh');
+            const mmEl = document.getElementById('duration-mm');
+            if (!badge || !hhEl || !mmEl) return;
+
+            if (players.length !== 4 || !startedAt) {
+                badge.classList.add('hidden');
+                return;
+            }
+
+            badge.classList.remove('hidden');
+            const nowSynced = window.getSyncedNow ? window.getSyncedNow() : Date.now();
+            const endRef = finishedAt || nowSynced;
+            const elapsedMs = Math.max(0, endRef - startedAt);
+            const totalMinutes = Math.floor(elapsedMs / 60000);
+            const hours = Math.floor(totalMinutes / 60);
+            const minutes = totalMinutes % 60;
+
+            hhEl.innerText = String(hours).padStart(2, '0');
+            mmEl.innerText = String(minutes).padStart(2, '0');
+        }
+
+        function startDurationTicker() {
+            updateLiveDurationDisplay();
+            if (durationTimerInterval) {
+                clearInterval(durationTimerInterval);
+            }
+            durationTimerInterval = setInterval(updateLiveDurationDisplay, 1000);
+        }
+
+        function stopDurationTicker() {
+            if (durationTimerInterval) {
+                clearInterval(durationTimerInterval);
+                durationTimerInterval = null;
+            }
+            const badge = document.getElementById('live-duration-badge');
+            if (badge) badge.classList.add('hidden');
+        }
+
+        // ==========================================
+        // FULLSCREEN & AUDIO FEEDBACK
+        // ==========================================
+        let tvAudioEnabled = true;
+        let sharedAudioCtx = null;
+
+        function getAudioContext() {
+            try {
+                if (!sharedAudioCtx) {
+                    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                    if (AudioCtx) sharedAudioCtx = new AudioCtx();
+                }
+                if (sharedAudioCtx && sharedAudioCtx.state === 'suspended') {
+                    sharedAudioCtx.resume();
+                }
+                return sharedAudioCtx;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function toggleTvAudio() {
+            tvAudioEnabled = !tvAudioEnabled;
+            const icon = document.getElementById('audio-toggle-icon');
+            const label = document.getElementById('audio-toggle-label');
+            if (tvAudioEnabled) {
+                getAudioContext();
+                if (icon) icon.className = 'fa-solid fa-volume-high text-mjgold';
+                if (label) label.innerText = 'Suara';
+                playScoreChangeSound(true);
+                showToast('Suara notifikasi skor AKTIF');
+            } else {
+                if (icon) icon.className = 'fa-solid fa-volume-xmark text-white/50';
+                if (label) label.innerText = 'Bisu';
+                showToast('Suara notifikasi skor DIMATIKAN');
+            }
+        }
+
+        ['click', 'keydown', 'touchstart'].forEach(evt => {
+            window.addEventListener(evt, () => {
+                if (tvAudioEnabled) getAudioContext();
+            }, { passive: true });
+        });
+
+        function toggleTvFullscreen() {
+            const icon = document.getElementById('fullscreen-icon');
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().then(() => {
+                    if (icon) icon.className = 'fa-solid fa-compress';
+                }).catch(() => {});
+            } else {
+                document.exitFullscreen().then(() => {
+                    if (icon) icon.className = 'fa-solid fa-expand';
+                }).catch(() => {});
+            }
+        }
+
+        function triggerHaptic(duration = 25) {
+            if ("vibrate" in navigator) {
+                try { navigator.vibrate(duration); } catch (e) {}
+            }
+        }
+
+        function playScoreChangeSound(hasPositiveGain = true) {
+            if (!tvAudioEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                if (!ctx) return;
+                const now = ctx.currentTime;
+                const notes = hasPositiveGain
+                    ? [
+                        { freq: 880.00, delay: 0.00, dur: 0.45, vol: 0.22 },
+                        { freq: 1318.51, delay: 0.11, dur: 0.75, vol: 0.26 }
+                      ]
+                    : [
+                        { freq: 587.33, delay: 0.00, dur: 0.40, vol: 0.20 },
+                        { freq: 440.00, delay: 0.12, dur: 0.65, vol: 0.22 }
+                      ];
+
+                notes.forEach(n => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(n.freq, now + n.delay);
+
+                    gain.gain.setValueAtTime(0.001, now + n.delay);
+                    gain.gain.exponentialRampToValueAtTime(n.vol, now + n.delay + 0.02);
+                    gain.gain.exponentialRampToValueAtTime(0.0008, now + n.delay + n.dur);
+
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now + n.delay);
+                    osc.stop(now + n.delay + n.dur + 0.02);
+                });
+            } catch (e) {}
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toastMsg');
+            if (!toast) return;
+            toast.innerText = msg;
+            toast.classList.remove('hidden');
+            clearTimeout(toast._hideTimer);
+            toast._hideTimer = setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 2500);
+        }
+        window.showToast = showToast;
+
+        // ==========================================
+        // GAME LOGIC & WIND CALCULATIONS
+        // ==========================================
+        function canEditGame() {
+            return !roomCode || isHost;
+        }
+
+        function getDealerRotations() {
+            return roundHistory.filter(r => r.dealerRotated).length;
+        }
+
+        function getRoundWindIndex() {
+            return Math.floor(getDealerRotations() / 4) % 4;
+        }
+
+        function getDealerIndex() {
+            return getDealerRotations() % 4;
+        }
+
+        function getSeatWindIndex(playerIdx) {
+            const dealerIdx = getDealerIndex();
+            return (playerIdx - dealerIdx + 4) % 4;
+        }
+
+        function formatWind(idx) {
+            return `${WINDS[idx].char} ${WINDS[idx].name}`;
+        }
+
+        function getLastRecordedDeltas() {
+            for (let i = roundHistory.length - 1; i >= 0; i--) {
+                const ds = roundHistory[i].deltaScores;
+                if (Array.isArray(ds) && ds.length === 4 && ds.some(v => v !== 0)) {
+                    return [...ds];
+                }
+            }
+            return [0, 0, 0, 0];
+        }
+
+        // ==========================================
+        // STATE PERSISTENCE & FIREBASE SYNC
+        // ==========================================
+        function saveState(pushRemote = true) {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                    players,
+                    roundHistory,
+                    currentRound,
+                    startedAt,
+                    finishedAt,
+                    roomCode,
+                    isHost
+                }));
+            } catch (err) {}
+
+            if (pushRemote && roomCode && isHost && window.fbRoomService) {
+                window.fbRoomService.pushState(roomCode, {
+                    players,
+                    roundHistory,
+                    currentRound,
+                    startedAt,
+                    finishedAt
+                });
+            }
+        }
+
+        function clearState() {
+            try {
+                localStorage.removeItem(STORAGE_KEY);
+            } catch (err) {}
+        }
+
+        function loadState() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (!raw) return false;
+                const data = JSON.parse(raw);
+                if (data && Array.isArray(data.players) && data.players.length === 4) {
+                    players = data.players;
+                    roundHistory = Array.isArray(data.roundHistory) ? data.roundHistory : [];
+                    currentRound = Number.isInteger(data.currentRound) ? data.currentRound : roundHistory.length + 1;
+                    startedAt = data.startedAt || null;
+                    finishedAt = data.finishedAt || null;
+                    roomCode = data.roomCode || null;
+                    isHost = typeof data.isHost === 'boolean' ? data.isHost : false;
+                    return true;
+                }
+            } catch (err) {}
+            return false;
+        }
+
+        function updateRoomBadgeUI(connected) {
+            const badge = document.getElementById('room-badge');
+            if (!badge) return;
+
+            if (!roomCode) {
+                badge.classList.add('hidden');
+                return;
+            }
+
+            badge.classList.remove('hidden');
+            const codeEl = document.getElementById('header-room-code');
+            const dotEl = document.getElementById('room-status-dot');
+            const roleEl = document.getElementById('header-room-role');
+
+            if (codeEl) codeEl.innerText = roomCode;
+            if (roleEl) roleEl.innerText = isHost ? 'HOST' : 'TV LIVE';
+
+            const isOnline = typeof connected === 'boolean'
+                ? connected
+                : (window.fbRoomService ? window.fbRoomService.isConnected() : true);
+
+            if (dotEl) {
+                dotEl.className = isOnline
+                    ? 'w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0'
+                    : 'w-2.5 h-2.5 rounded-full bg-amber-400 shrink-0';
+            }
+        }
+        window.updateRoomBadgeUI = updateRoomBadgeUI;
+
+        function copyRoomCode() {
+            if (!roomCode) return;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(roomCode).then(() => {
+                    showToast(`Kode Meja ${roomCode} disalin!`);
+                }).catch(() => {
+                    showToast(`Kode Meja: ${roomCode}`);
+                });
+            } else {
+                showToast(`Kode Meja: ${roomCode}`);
+            }
+        }
+
+        function updateControlPermissionsUI() {
+            const editable = canEditGame();
+            const hostControls = document.getElementById('host-controls-panel');
+            const viewerPill = document.getElementById('viewer-mode-pill');
+
+            if (hostControls) hostControls.classList.toggle('hidden', !editable);
+            if (viewerPill) viewerPill.classList.toggle('hidden', editable);
+            updateRoomBadgeUI();
+        }
+
+        function applyRemoteRoomData(data) {
+            if (!data || !Array.isArray(data.players) || data.players.length !== 4) return;
+            const wasFinished = Boolean(finishedAt);
+
+            players = data.players.map((p, idx) => ({
+                id: idx,
+                name: String(p.name || `Pemain ${idx + 1}`),
+                score: Number(p.score) || 0
+            }));
+            roundHistory = Array.isArray(data.roundHistory) ? data.roundHistory : [];
+            currentRound = Number.isInteger(data.currentRound) ? data.currentRound : roundHistory.length + 1;
+            // Ambil startedAt persis dari Firebase Host (waktu saat Host menekan "Buat Room")
+            startedAt = data.startedAt || null;
+            finishedAt = data.finishedAt || null;
+
+            saveState(false);
+
+            if (finishedAt) {
+                showFinalScreen(!wasFinished);
+            } else {
+                document.getElementById('screen-final').classList.add('hidden');
+                showDashboard();
+            }
+        }
+
+        function attachOnlineRoomListener() {
+            if (!roomCode || !window.fbRoomService) return;
+            window.fbRoomService.subscribeRoom(roomCode, (data) => {
+                if (!isHost) {
+                    applyRemoteRoomData(data);
+                }
+            });
+        }
+
+        function hideDirectJoinError() {
+            const el = document.getElementById('direct-join-error');
+            if (el) el.classList.add('hidden');
+        }
+
+        function showDirectJoinError(msg) {
+            const el = document.getElementById('direct-join-error');
+            if (el) {
+                el.querySelector('span').innerText = msg;
+                el.classList.remove('hidden');
+            }
+        }
+
+        async function submitDirectJoinRoom(prefilledCode = null) {
+            getAudioContext();
+            const input = document.getElementById('direct-room-input');
+            const code = (prefilledCode || (input ? input.value : '')).trim();
+
+            if (!/^\d{6}$/.test(code)) {
+                showDirectJoinError('Masukkan 6 digit angka kode Meja dari HP Host.');
+                return;
+            }
+
+            if (!window.fbRoomService) {
+                showDirectJoinError('Koneksi Firebase belum siap, coba sesaat lagi.');
+                return;
+            }
+
+            const btn = document.getElementById('btn-direct-join');
+            const origHtml = btn ? btn.innerHTML : '';
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>Menghubungkan ke Meja...</span>';
+            }
+
+            try {
+                const roomData = await window.fbRoomService.checkRoomExists(code);
+                if (!roomData || !Array.isArray(roomData.players)) {
+                    showDirectJoinError(`Meja ${code} tidak ditemukan. Pastikan Host sudah menekan "Buat Meja".`);
+                    return;
+                }
+
+                roomCode = code;
+                isHost = false;
+                lastKnownScores = null;
+                activeScoreDeltas = [0, 0, 0, 0];
+
+                applyRemoteRoomData(roomData);
+                attachOnlineRoomListener();
+                showToast(`Terhubung ke Meja ${code}`);
+            } catch (err) {
+                console.error(err);
+                showDirectJoinError('Gagal terhubung ke server. Periksa koneksi internet TV.');
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = origHtml;
+                }
+            }
+        }
+
+        async function createOnlineRoom() {
+            getAudioContext();
+            if (!window.fbRoomService) {
+                showToast('Layanan Firebase sedang dimuat, coba sesaat lagi.');
+                return;
+            }
+
+            const btn = document.getElementById('btn-create-room');
+            const origHtml = btn ? btn.innerHTML : '';
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>Membuat Meja...</span>';
+            }
+
+            try {
+                const p1 = document.getElementById('p1-input').value.trim() || 'Pemain 1';
+                const p2 = document.getElementById('p2-input').value.trim() || 'Pemain 2';
+                const p3 = document.getElementById('p3-input').value.trim() || 'Pemain 3';
+                const p4 = document.getElementById('p4-input').value.trim() || 'Pemain 4';
+
+                players = [
+                    { id: 0, name: p1, score: 0 },
+                    { id: 1, name: p2, score: 0 },
+                    { id: 2, name: p3, score: 0 },
+                    { id: 3, name: p4, score: 0 }
+                ];
+                roundHistory = [];
+                currentRound = 1;
+                startedAt = window.getSyncedNow ? window.getSyncedNow() : Date.now();
+                finishedAt = null;
+                lastKnownScores = [0, 0, 0, 0];
+                activeScoreDeltas = [0, 0, 0, 0];
+
+                const newCode = await window.fbRoomService.generateUniqueCode();
+                roomCode = newCode;
+                isHost = true;
+
+                await window.fbRoomService.createRoom(roomCode, {
+                    players,
+                    roundHistory,
+                    currentRound,
+                    startedAt,
+                    finishedAt
+                });
+
+                saveState(false);
+                attachOnlineRoomListener();
+                showDashboard();
+                showToast(`Meja ${roomCode} aktif! Timer berjalan.`);
+            } catch (err) {
+                console.error(err);
+                roomCode = null;
+                showToast('Gagal membuat Meja Online.');
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = origHtml;
+                }
+            }
+        }
+
+        function leaveOnlineRoom() {
+            if (window.fbRoomService) {
+                window.fbRoomService.unsubscribeRoom();
+            }
+            roomCode = null;
+            isHost = false;
+            players = [];
+            roundHistory = [];
+            currentRound = 1;
+            startedAt = null;
+            finishedAt = null;
+            lastKnownScores = null;
+            activeScoreDeltas = [0, 0, 0, 0];
+            clearState();
+            stopDurationTicker();
+
+            updateRoomBadgeUI();
+            document.getElementById('screen-dashboard').classList.add('hidden');
+            document.getElementById('screen-final').classList.add('hidden');
+            document.getElementById('round-counter-badge').classList.add('hidden');
+            document.getElementById('screen-setup').classList.remove('hidden');
+            showToast('Keluar dari Meja.');
+        }
+
+        // ==========================================
+        // RENDER SCOREBOARD (PERMANENT LAST DELTA)
+        // ==========================================
+        function showDashboard() {
+            document.getElementById('screen-setup').classList.add('hidden');
+            document.getElementById('screen-final').classList.add('hidden');
+            document.getElementById('screen-dashboard').classList.remove('hidden');
+            document.getElementById('round-counter-badge').classList.remove('hidden');
+
+            updateControlPermissionsUI();
+            renderScoreboard();
+            renderHistory();
+            startDurationTicker();
+        }
+
+        function renderScoreboard() {
+            document.getElementById('current-round-num').innerText = currentRound;
+
+            const roundWindIdx = getRoundWindIndex();
+            const dealerIdx = getDealerIndex();
+            document.getElementById('round-wind-display').innerText = formatWind(roundWindIdx);
+            document.getElementById('current-dealer-display').innerText = players[dealerIdx].name;
+
+            // Deteksi perubahan skor: timpa activeScoreDeltas hanya ketika ada perubahan baru,
+            // dan biarkan tampil permanen sampai ada perubahan skor berikutnya
+            const currentScores = players.map(p => p.score);
+            const roundChangedDeltas = [0, 0, 0, 0];
+            let anyScoreChanged = false;
+            let anyPositiveGain = false;
+
+            if (lastKnownScores !== null && lastKnownScores.length === 4) {
+                for (let i = 0; i < 4; i++) {
+                    const diff = currentScores[i] - lastKnownScores[i];
+                    if (diff !== 0) {
+                        roundChangedDeltas[i] = diff;
+                        activeScoreDeltas[i] = diff;
+                        anyScoreChanged = true;
+                        if (diff > 0) anyPositiveGain = true;
+                    }
+                }
+            } else if (roundHistory.length > 0) {
+                // Pulihkan perubahan skor terakhir saat TV baru bergabung atau di-refresh
+                activeScoreDeltas = getLastRecordedDeltas();
+            }
+            lastKnownScores = [...currentScores];
+
+            if (anyScoreChanged) {
+                playScoreChangeSound(anyPositiveGain);
+            }
+
+            const maxScore = Math.max(...players.map(p => p.score));
+            const hasLeader = players.some(p => p.score !== 0);
+
+            const container = document.getElementById('scoreboard-cards');
+            container.innerHTML = '';
+
+            TV_SEAT_ORDER.forEach((idx) => {
+                const player = players[idx];
+                const isLeader = hasLeader && player.score === maxScore;
+                const seatWindIdx = getSeatWindIndex(idx);
+                const isDealer = seatWindIdx === 0;
+
+                const freshDelta = roundChangedDeltas[idx];
+                const persistentDelta = activeScoreDeltas[idx];
+
+                let flashClass = '';
+                if (freshDelta > 0) flashClass = 'card-flash-up';
+                else if (freshDelta < 0) flashClass = 'card-flash-down';
+
+                const cardBorderClass = freshDelta > 0
+                    ? 'border-[3px] border-emerald-500'
+                    : freshDelta < 0
+                        ? 'border-[3px] border-mjdanger'
+                        : isLeader
+                            ? 'border-[3px] border-mjgold'
+                            : isDealer
+                                ? 'border-2 border-mjgreen/60'
+                                : 'border border-mjgreen/15';
+
+                const deltaHtml = persistentDelta !== 0
+    			? `<div class="mt-3 ${freshDelta !== 0 ? 'delta-pill-pop' : ''}">
+           		<span class="inline-flex items-center gap-2 lg:gap-2.5 px-4 lg:px-6 py-1 lg:py-1.5 rounded-full font-mono font-black text-xl lg:text-3xl xl:text-4xl shadow-sm ${persistentDelta > 0 ? 'bg-emerald-100 text-emerald-700 border border-emerald-300' : 'bg-red-100 text-mjdanger border border-red-300'}">
+               			${persistentDelta > 0
+		                   ? `<i class="fa-solid fa-arrow-trend-up"></i>+${persistentDelta}`
+		                   : `<i class="fa-solid fa-arrow-trend-down"></i>${persistentDelta}`}
+           		</span>
+       			</div>`
+			: `<div class="mt-3 h-9 lg:h-12"></div>`;
+
+                const windBadge = isDealer
+                    ? `<div class="w-full py-2.5 lg:py-3.5 px-3 rounded-2xl bg-mjgreen text-mjgold font-black tv-wind-badge text-center shadow-sm flex items-center justify-center space-x-2">
+                           <span>${WINDS[seatWindIdx].char} ${WINDS[seatWindIdx].name}</span>
+                           <span class="text-xs lg:text-base bg-mjgold text-mjgreen px-2.5 py-0.5 rounded-lg uppercase tracking-wider">BANDAR</span>
+                       </div>`
+                    : `<div class="w-full py-2.5 lg:py-3.5 px-3 rounded-2xl bg-mjlight text-mjgreen font-extrabold tv-wind-badge text-center">
+                           ${WINDS[seatWindIdx].char} ${WINDS[seatWindIdx].name}
+                       </div>`;
+
+                container.innerHTML += `
+                    <div class="bg-white rounded-3xl p-5 lg:p-7 xl:p-8 shadow-md ${cardBorderClass} ${flashClass} relative flex flex-col justify-between min-h-[300px] lg:min-h-[420px] xl:min-h-[520px] transition-all duration-300">
+                        ${isLeader ? '<span class="absolute -top-4 right-5 bg-mjgold text-white text-xs lg:text-base xl:text-lg font-black px-4 py-1 rounded-full uppercase tracking-wider shadow"><i class="fa-solid fa-crown mr-1.5"></i>Memimpin</span>' : ''}
+                        <div class="text-center border-b border-mjbg pb-3 xl:pb-4">
+                            <div class="w-full tv-player-name font-black text-mjgreen uppercase tracking-wide truncate text-center">
+                                ${idx === 0 ? '<span class="text-mjdanger text-xl xl:text-3xl align-middle" title="East Origin">▲</span> ' : ''}${escapeHtml(player.name)}
+                            </div>
+                        </div>
+                        <div class="my-3 text-center flex-grow flex flex-col items-center justify-center">
+                            <div class="tv-player-score font-black ${player.score < 0 ? 'text-mjdanger' : 'text-mjgreen'} tracking-tight ${freshDelta !== 0 ? 'score-pop-anim' : ''}">
+                                ${player.score > 0 ? '+' + player.score : player.score}
+                            </div>
+                            ${deltaHtml}
+                        </div>
+                        <div class="pt-1">
+                            ${windBadge}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function renderHistory() {
+            const container = document.getElementById('history-container');
+            const undoBtn = document.getElementById('btn-undo');
+            const editable = canEditGame();
+
+            if (roundHistory.length === 0) {
+                container.innerHTML = `<p class="text-xs lg:text-sm text-center text-gray-400 py-2 italic col-span-full">Belum ada skor yang dicatat.</p>`;
+                if (undoBtn) undoBtn.classList.add('hidden');
+                return;
+            }
+
+            if (undoBtn) undoBtn.classList.toggle('hidden', !editable);
+            container.innerHTML = '';
+
+            [...roundHistory].reverse().forEach((item) => {
+                const changes = item.deltaScores.map((ds, i) => `${players[i].name}: ${ds > 0 ? '+' + ds : ds}`).join(' | ');
+                const isPenalty = item.winType === 'penalti';
+                const typeLabel = item.winType === 'cumo' ? '🏆 Cu Mo'
+                    : item.winType === 'imbang' ? '🤝 Imbang'
+                    : isPenalty ? '⚠️ Penalti'
+                    : '🎯 Buangan';
+
+                container.innerHTML += `
+                    <div class="bg-mjbg/70 px-3.5 py-2 rounded-xl text-xs lg:text-sm border border-mjgreen/10 flex flex-col gap-0.5">
+                        <div class="flex items-center justify-between font-bold ${isPenalty ? 'text-mjdanger' : 'text-mjgreen'}">
+                            <span class="truncate">R${item.round}: ${escapeHtml(describeRound(item))}</span>
+                            <span class="text-[11px] lg:text-xs font-semibold bg-mjlight px-2.5 py-0.5 rounded-full shrink-0 ml-2">${typeof item.roundWind === 'number' ? WINDS[item.roundWind].char + ' · ' : ''}${typeLabel}</span>
+                        </div>
+                        <div class="text-xs text-gray-500 font-mono truncate">${escapeHtml(changes)}</div>
+                    </div>
+                `;
+            });
+        }
+
+        function describeRound(item) {
+            if (item.winType === 'cumo') return `${item.winnerName} menang Cu Mo (Tay: ${item.points})`;
+            if (item.winType === 'buangan') return `${item.winnerName} menang Buangan dari ${item.discarderName} (Tay: ${item.points})`;
+            return item.details || 'Ronde imbang';
+        }
+
+        // ==========================================
+        // HOST ACTIONS (JIKA PC DIPAKAI SEBAGAI HOST)
+        // ==========================================
+        let selectedWinnerIndex = null;
+        let selectedWinType = null;
+        let selectedDiscarderIndex = null;
+
+        function openRecordModal() {
+            if (!canEditGame()) return;
+            selectedWinnerIndex = null;
+            selectedWinType = null;
+            selectedDiscarderIndex = null;
+            document.getElementById('win-points-input').value = '';
+            hidePointsError();
+
+            const grid = document.getElementById('winner-selection-grid');
+            grid.innerHTML = SEAT_ORDER.map(idx => `
+                <button onclick="selectWinner(${idx})" class="p-3.5 rounded-xl border-2 border-mjgreen/20 hover:border-mjgreen bg-mjbg/40 font-bold text-mjgreen truncate">
+                    ${escapeHtml(players[idx].name)}
+                </button>
+            `).join('');
+            goToStep(1);
+            document.getElementById('modal-record').classList.remove('hidden');
+        }
+
+        function closeRecordModal() {
+            document.getElementById('modal-record').classList.add('hidden');
+        }
+
+        function goToStep(stepNum) {
+            [1, 2, 3].forEach(n => {
+                document.getElementById(`record-step-${n}`).classList.toggle('hidden', n !== stepNum);
+                const dot = document.getElementById(`step-dot-${n}`);
+                dot.className = n === stepNum
+                    ? "flex-1 text-center font-bold text-sm pb-1 border-b-2 border-mjgreen text-mjgreen"
+                    : "flex-1 text-center font-semibold text-sm pb-1 border-b-2 border-gray-200 text-gray-400";
+            });
+        }
+
+        function selectWinner(idx) {
+            selectedWinnerIndex = idx;
+            document.getElementById('selected-winner-badge').innerText = `Pemenang: ${players[idx].name}`;
+            document.getElementById('discard-selector-container').classList.add('hidden');
+            goToStep(2);
+        }
+
+        function selectWinType(type) {
+            selectedWinType = type;
+            if (type === 'buangan') {
+                const grid = document.getElementById('discarder-selection-grid');
+                grid.innerHTML = TV_SEAT_ORDER.filter(i => i !== selectedWinnerIndex).map(i => `
+                    <button onclick="selectDiscarder(${i})" class="p-2.5 rounded-xl border border-mjgreen/30 hover:bg-mjgreen hover:text-white font-bold text-xs text-mjgreen truncate">
+                        ${escapeHtml(players[i].name)}
+                    </button>
+                `).join('');
+                document.getElementById('discard-selector-container').classList.remove('hidden');
+            } else {
+                prepareStep3();
+            }
+        }
+
+        function selectDiscarder(idx) {
+            selectedDiscarderIndex = idx;
+            prepareStep3();
+        }
+
+        function prepareStep3() {
+            const wName = players[selectedWinnerIndex].name;
+            const badge = document.getElementById('summary-win-type');
+            const preview = document.getElementById('formula-preview');
+            if (selectedWinType === 'cumo') {
+                badge.innerText = `🏆 ${wName} (Cu Mo)`;
+                preview.innerHTML = `<div>• Semua lawan bayar Tay × 2</div><div>• ${escapeHtml(wName)} mendapat Tay × 6</div>`;
+            } else {
+                const dName = players[selectedDiscarderIndex].name;
+                badge.innerText = `🎯 ${wName} (Buangan dari ${dName})`;
+                preview.innerHTML = `<div>• ${escapeHtml(dName)} bayar Tay × 2</div><div>• Pemain lain bayar Tay × 1</div><div>• ${escapeHtml(wName)} mendapat Tay × 4</div>`;
+            }
+            goToStep(3);
+        }
+
+        function hidePointsError() {
+            document.getElementById('win-points-error').classList.add('hidden');
+        }
+
+        function adjustWinPoints(amount) {
+            const input = document.getElementById('win-points-input');
+            const val = Math.max(0, (parseInt(input.value) || 0) + amount);
+            input.value = val;
+            hidePointsError();
+        }
+
+        function submitScore() {
+            if (!canEditGame()) return;
+            const points = parseInt(document.getElementById('win-points-input').value);
+            if (isNaN(points) || points < MIN_WIN_POINTS) {
+                document.getElementById('win-points-error').classList.remove('hidden');
+                return;
+            }
+
+            const deltaScores = [0, 0, 0, 0];
+            if (selectedWinType === 'cumo') {
+                players.forEach((_, idx) => {
+                    deltaScores[idx] = idx === selectedWinnerIndex ? points * 6 : -(points * 2);
+                });
+            } else {
+                players.forEach((_, idx) => {
+                    deltaScores[idx] = idx === selectedWinnerIndex ? points * 4 : (idx === selectedDiscarderIndex ? -(points * 2) : -points);
+                });
+            }
+
+            players.forEach((p, idx) => { p.score += deltaScores[idx]; });
+            const dealerIdx = getDealerIndex();
+            roundHistory.push({
+                round: currentRound,
+                winType: selectedWinType,
+                roundWind: getRoundWindIndex(),
+                dealerIndex: dealerIdx,
+                dealerRotated: selectedWinnerIndex !== dealerIdx,
+                winnerIndex: selectedWinnerIndex,
+                winnerName: players[selectedWinnerIndex].name,
+                discarderName: selectedWinType === 'buangan' ? players[selectedDiscarderIndex].name : null,
+                points,
+                details: describeRound({
+                    winType: selectedWinType,
+                    winnerName: players[selectedWinnerIndex].name,
+                    discarderName: selectedWinType === 'buangan' ? players[selectedDiscarderIndex].name : null,
+                    points
+                }),
+                deltaScores
+            });
+
+            currentRound++;
+            saveState(true);
+            renderScoreboard();
+            renderHistory();
+            closeRecordModal();
+        }
+
+        function recordDraw() {
+            if (!canEditGame()) return;
+            roundHistory.push({
+                round: currentRound,
+                winType: 'imbang',
+                roundWind: getRoundWindIndex(),
+                dealerIndex: getDealerIndex(),
+                dealerRotated: true,
+                points: 0,
+                details: 'Ronde imbang',
+                deltaScores: [0, 0, 0, 0]
+            });
+            currentRound++;
+            saveState(true);
+            renderScoreboard();
+            renderHistory();
+        }
+
+        function undoLastRound() {
+            if (!canEditGame() || roundHistory.length === 0) return;
+            const last = roundHistory.pop();
+            last.deltaScores.forEach((ds, idx) => { players[idx].score -= ds; });
+            if (last.winType !== 'penalti' || last.endsRound) currentRound--;
+            activeScoreDeltas = getLastRecordedDeltas();
+            lastKnownScores = players.map(p => p.score);
+            saveState(true);
+            renderScoreboard();
+            renderHistory();
+        }
+
+        function openFinishModal() {
+            if (!canEditGame()) return;
+            document.getElementById('modal-finish').classList.remove('hidden');
+        }
+
+        function closeFinishModal() {
+            document.getElementById('modal-finish').classList.add('hidden');
+        }
+
+        function finishGame() {
+            if (!canEditGame()) return;
+            closeFinishModal();
+            finishedAt = window.getSyncedNow ? window.getSyncedNow() : Date.now();
+            saveState(true);
+            showFinalScreen(true);
+        }
+
+        // ==========================================
+        // FINAL SCREEN & EXPORT PNG
+        // ==========================================
+        function formatDuration(ms) {
+            const totalMinutes = Math.max(0, Math.floor(ms / 60000));
+            const hours = Math.floor(totalMinutes / 60);
+            const minutes = totalMinutes % 60;
+            return hours > 0 ? `${hours} jam ${minutes} menit` : `${minutes} menit`;
+        }
+
+        function describeTopEntries(entries) {
+            if (entries.length === 0) return '-';
+            const top = Math.max(...entries.map(e => e.value));
+            const names = [...new Set(entries.filter(e => e.value === top).map(e => e.name))];
+            return `${names.map(escapeHtml).join(', ')} (${top})`;
+        }
+
+        function showFinalScreen(celebrate = true) {
+            updateLiveDurationDisplay();
+            document.getElementById('screen-setup').classList.add('hidden');
+            document.getElementById('screen-dashboard').classList.add('hidden');
+            document.getElementById('round-counter-badge').classList.add('hidden');
+            document.getElementById('screen-final').classList.remove('hidden');
+            updateRoomBadgeUI();
+
+            const endDate = new Date(finishedAt || Date.now());
+            document.getElementById('final-date').innerText = endDate.toLocaleDateString('id-ID', {
+                weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+            });
+            document.getElementById('final-start-time').innerText = startedAt
+                ? new Date(startedAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+                : '-';
+            document.getElementById('final-duration').innerText = startedAt
+                ? formatDuration((finishedAt || Date.now()) - startedAt)
+                : '-';
+            document.getElementById('final-rounds').innerText = roundHistory.filter(r => r.winType !== 'penalti' || r.endsRound).length;
+
+            const sorted = [...players].sort((a, b) => b.score - a.score);
+            const medal = ['bg-mjgold text-white', 'bg-gray-400 text-white', 'bg-amber-700 text-white', 'bg-mjgreen/15 text-mjgreen'];
+
+            document.getElementById('final-ranking').innerHTML = sorted.map((player, i) => {
+                const rank = sorted.findIndex(p => p.score === player.score) + 1;
+                const isTop = rank === 1;
+                const formattedScore = player.score > 0 ? '+' + player.score : String(player.score);
+                return `
+                    <div style="animation-delay: ${((sorted.length - 1 - i) * 0.15).toFixed(2)}s"
+                         class="flex items-center rounded-2xl p-4 lg:p-5 shadow-sm border ${celebrate ? 'podium-reveal' : ''} ${isTop ? 'champion-card champion-shimmer border-mjgold border-2' : 'bg-white border-mjgreen/15'}">
+                        <div class="w-11 h-11 lg:w-12 lg:h-12 rounded-full flex items-center justify-center font-black text-xl ${medal[rank - 1]} shrink-0">${rank}</div>
+                        <div class="final-name flex-1 min-w-0 px-4 font-bold text-mjgreen text-xl lg:text-2xl truncate flex items-center gap-2">
+                            ${isTop ? '<span class="crown-badge text-2xl">👑</span>' : ''}
+                            <span class="truncate">${escapeHtml(player.name)}</span>
+                        </div>
+                        <div class="text-2xl lg:text-4xl font-black ${player.score < 0 ? 'text-mjdanger' : 'text-mjgreen'}">
+                            ${formattedScore}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            const winRounds = roundHistory.filter(r => r.winType === 'cumo' || r.winType === 'buangan');
+            document.getElementById('final-biggest-hand').innerHTML = describeTopEntries(
+                winRounds.map(r => ({ name: r.winnerName, value: r.points }))
+            );
+            document.getElementById('final-biggest-round').innerHTML = describeTopEntries(
+                winRounds.map(r => ({ name: r.winnerName, value: Math.max(...r.deltaScores) }))
+            );
+        }
+
+        async function saveFinal() {
+            if (typeof html2canvas === 'undefined') return;
+            const canvas = await html2canvas(document.getElementById('final-capture'), {
+                backgroundColor: '#F9F5F1',
+                scale: 2
+            });
+            canvas.toBlob(blob => {
+                if (!blob) return;
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `skor-mahjong-tv-${Date.now()}.png`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                setTimeout(() => URL.revokeObjectURL(url), 1000);
+            }, 'image/png');
+        }
+
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // ==========================================
+        // AUTO-INIT & URL ?room=XXXXXX RECONNECT
+        // ==========================================
+        function initTvApp() {
+            const params = new URLSearchParams(window.location.search);
+            const urlRoom = params.get('room');
+
+            if (loadState() && players.length === 4) {
+                if (finishedAt) {
+                    showFinalScreen(false);
+                } else {
+                    showDashboard();
+                }
+                if (roomCode && window.fbRoomService) {
+                    attachOnlineRoomListener();
+                }
+            } else if (urlRoom && /^\d{6}$/.test(urlRoom)) {
+                const input = document.getElementById('direct-room-input');
+                if (input) input.value = urlRoom;
+                if (window.fbRoomService) {
+                    submitDirectJoinRoom(urlRoom);
+                }
+            }
+        }
+
+        window.addEventListener('load', initTvApp);
+        window.addEventListener('fb-ready', () => {
+            if (roomCode && players.length === 4) {
+                attachOnlineRoomListener();
+            } else {
+                const params = new URLSearchParams(window.location.search);
+                const urlRoom = params.get('room');
+                if (urlRoom && /^\d{6}$/.test(urlRoom) && players.length === 0) {
+                    submitDirectJoinRoom(urlRoom);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,2278 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bandung Rules</title>
+  <link rel="icon" href="https://raw.githubusercontent.com/budijoe/skor-mahjong/main/svg/03-red-dragon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+SC:wght@500;700;900&family=Noto+Serif+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet" />
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+  <style>
+    :root {
+      --bg-outer: #082925;
+      --bg-main: #0D3B31;
+      --bg-header: #092D26;
+      --card-bg: #faf8f3;
+      --card-border: #e5dec9;
+      --text-primary: #18221d;
+      --text-secondary: #4a5951;
+      --text-muted: #6e7d75;
+      --accent-gold: #CCB47A;
+      --accent-gold-bg: #fef3c7;
+      --accent-gold-text: #92400e;
+      --accent-red: #b91c1c;
+      --accent-red-bg: #fee2e2;
+      --accent-jade: #0f5132;
+      --accent-jade-bg: #D1FAEF;
+      --pill-bg: rgba(255, 255, 255, 0.1);
+      --pill-hover: rgba(255, 255, 255, 0.22);
+      --font-delta: 0px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-outer);
+      color: var(--text-primary);
+      line-height: 1.45;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .page-wrapper {
+      max-width: 430px;
+      margin: 0 auto;
+      min-height: 100vh;
+      background-color: var(--bg-main);
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.45);
+      padding-bottom: 40px;
+    }
+
+    /* Sticky Top Header & Nav */
+    .top-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background-color: var(--bg-header);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 12px 16px 10px;
+      backdrop-filter: blur(8px);
+    }
+
+    .header-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .header-icon-btn {
+      flex: 0 0 34px;
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background-color: rgba(255, 255, 255, 0.08);
+      color: #f3f4f6;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .header-icon-btn:hover,
+    .header-icon-btn.active {
+      background-color: var(--accent-gold);
+      color: #142218;
+      border-color: var(--accent-gold);
+    }
+
+    .site-title {
+      flex: 1;
+      font-family: 'Bebas Neue', sans-serif; /* <-- Tambahkan ini */
+      color: #ffffff;
+      font-size: calc(22px + var(--font-delta)); /* <-- Naikkan dari 15px ke 22px */
+      font-weight: 400; /* <-- Ubah dari 800 ke 400 */
+      letter-spacing: 0.06em; /* <-- Sedikit direnggangkan agar rapi */
+      text-align: center;
+      line-height: 1.1;
+    }
+
+    /* Collapsible Search Bar */
+    .search-bar-wrap {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      background-color: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(204, 180, 122, 0.55);
+      border-radius: 10px;
+      padding: 6px 10px;
+      margin-bottom: 10px;
+    }
+
+    .search-bar-wrap.open {
+      display: flex;
+    }
+
+    .search-bar-wrap i {
+      color: var(--accent-gold);
+      font-size: 13px;
+    }
+
+    .search-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #ffffff;
+      font-family: inherit;
+      font-size: 13px;
+    }
+
+    .search-input::placeholder {
+      color: rgba(255, 255, 255, 0.55);
+    }
+
+    .search-clear-btn {
+      background: none;
+      border: none;
+      color: #d1d5db;
+      cursor: pointer;
+      font-size: 14px;
+      padding: 2px 4px;
+      display: none;
+    }
+
+    .search-clear-btn.visible {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .search-status {
+      display: none;
+      font-size: 11.5px;
+      color: #C9BA77;
+      margin-bottom: 10px;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .search-status.visible {
+      display: block;
+    }
+
+    mark.search-hl {
+      background-color: #fde047;
+      color: #142218;
+      padding: 0 2px;
+      border-radius: 3px;
+    }
+
+    /* Nav Pills */
+    .nav-pills {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: none;
+      scroll-behavior: smooth;
+    }
+
+    .nav-pills::-webkit-scrollbar {
+      display: none;
+    }
+
+    .nav-pill {
+      flex: 0 0 auto;
+      text-decoration: none;
+      color: #f3f4f6;
+      background-color: var(--pill-bg);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      font-size: calc(11px + var(--font-delta));
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      padding: 6px 10px;
+      border-radius: 999px;
+      transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .nav-pill:hover,
+    .nav-pill:active,
+    .nav-pill.active {
+      background-color: var(--accent-gold);
+      color: #142218;
+      border-color: var(--accent-gold);
+    }
+
+    /* Content Container */
+    .container {
+      padding: 14px 16px;
+    }
+
+    .subtitle-banner {
+      background: linear-gradient(135deg, #134e33 0%, #0a3320 100%);
+      border: 1px solid rgba(217, 160, 54, 0.45);
+      border-radius: 12px;
+      padding: 12px 14px;
+      text-align: center;
+      color: #C9BA77;
+      font-size: calc(12px + var(--font-delta));
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      margin-bottom: 18px;
+    }
+
+    /* Section Header */
+    .section-block {
+      scroll-margin-top: 108px;
+      margin-bottom: 24px;
+    }
+
+    .section-title {
+      display: inline-block;
+      background-color: #CCB47A;
+      color: #142218;
+      font-size: calc(12px + var(--font-delta));
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      padding: 5px 12px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+
+    /* Rule Card */
+    .rule-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 13px 14px;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.14);
+    }
+
+    .rule-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .rule-title-group {
+      flex: 1;
+    }
+
+    .rule-name {
+      font-size: calc(15px + var(--font-delta));
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+
+    .rule-en {
+      font-size: calc(12px + var(--font-delta));
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-top: 1px;
+    }
+
+    .rule-cn {
+      font-family: 'Noto Serif SC', serif;
+      font-size: calc(16px + var(--font-delta));
+      font-weight: 700;
+      color: var(--accent-gold-text);
+      margin-top: 2px;
+      letter-spacing: 0.04em;
+    }
+
+    /* Single Point Badge */
+    .point-badge {
+      flex-shrink: 0;
+      min-width: 38px;
+      height: 38px;
+      padding: 0 10px;
+      border-radius: 10px;
+      background-color: var(--accent-jade);
+      color: #ffffff;
+      font-size: calc(16px + var(--font-delta));
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .point-badge.neutral {
+      background-color: #e5e7eb;
+      color: #374151;
+    }
+
+    /* Dual Points (Ada Kim / Bo Kim) */
+    .dual-points {
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .kim-box {
+      border-radius: 8px;
+      padding: 4px 8px;
+      text-align: center;
+      min-width: 56px;
+    }
+
+    .kim-box.ada {
+      background-color: var(--accent-gold-bg);
+      border: 1px solid #fcd34d;
+    }
+
+    .kim-box.bo {
+      background-color: var(--accent-jade-bg);
+      border: 1px solid #6ee7b7;
+    }
+
+    .kim-label {
+      font-size: calc(9px + var(--font-delta));
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      display: block;
+    }
+
+    .kim-box.ada .kim-label {
+      color: var(--accent-gold-text);
+    }
+
+    .kim-box.bo .kim-label {
+      color: var(--accent-jade);
+    }
+
+    .kim-val {
+      font-size: calc(15px + var(--font-delta));
+      font-weight: 900;
+      color: var(--text-primary);
+    }
+
+    .rule-desc {
+      font-size: calc(13px + var(--font-delta));
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .rule-desc + .rule-desc {
+      margin-top: 4px;
+    }
+
+    /* Penalty Highlight */
+    .penalty-effect {
+      margin-top: 8px;
+      padding: 7px 10px;
+      background-color: var(--accent-red-bg);
+      border-left: 3px solid var(--accent-red);
+      border-radius: 6px;
+      font-size: calc(12.5px + var(--font-delta));
+      font-weight: 700;
+      color: #991b1b;
+    }
+
+    /* SVG Mahjong Tiles Container (Rata Kiri / Align Left) */
+    .tile-hand {
+      margin-top: 10px;
+      background-color: #164938;
+      border: 1px solid #0d3326;
+      border-radius: 8px;
+      padding: 7px 8px 9px;
+      display: flex;
+      flex-wrap: nowrap;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 1.5px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .tile-hand::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Frame Putih Kartu Mahjong */
+    .mahjong-tile {
+      flex: 0 0 20px;
+      width: 20px;
+      height: 28px;
+      background: linear-gradient(180deg, #ffffff 0%, #f7f5ef 100%);
+      border: 1px solid #d6d0c2;
+      border-radius: 3.5px;
+      padding: 1.5px 1px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 0 #9a74b0, 0 2.5px 3px rgba(0, 0, 0, 0.32);
+    }
+
+    .mahjong-tile img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    /* Bagian Belakang Tile (Tertutup - Kode: x) */
+    .mahjong-tile.back {
+      background: #CCABDE;
+      border: 1px solid #b892ce;
+      box-shadow: 0 2px 0 #9a74b0, 0 2.5px 3px rgba(0, 0, 0, 0.32);
+    }
+
+    .tile-spacer {
+      flex: 0 0 3px;
+      width: 3px;
+      height: 1px;
+    }
+
+    /* Empty Search State */
+    .no-results-box {
+      display: none;
+      background-color: rgba(255, 255, 255, 0.08);
+      border: 1px dashed rgba(204, 180, 122, 0.5);
+      border-radius: 12px;
+      padding: 24px 16px;
+      text-align: center;
+      color: #e5e7eb;
+      font-size: calc(13px + var(--font-delta));
+      margin-bottom: 20px;
+    }
+
+    .no-results-box.visible {
+      display: block;
+    }
+
+    /* Bottom Action Buttons */
+    .actions-section {
+      margin-top: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .action-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      width: 100%;
+      padding: 13px 16px;
+      border-radius: 12px;
+      font-size: calc(13px + var(--font-delta));
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: transform 0.12s ease, opacity 0.15s ease;
+    }
+
+    .action-btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-pdf {
+      background-color: #faf8f3;
+      color: #0D3B31;
+      border: 1.5px solid #CCB47A;
+    }
+
+    .btn-app {
+      background-color: #CCB47A;
+      color: #142218;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+    }
+
+    .btn-qris {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      color: #ffffff;
+      font-size: calc(13.5px + var(--font-delta));
+      margin-top: 6px;
+      box-shadow: 0 4px 12px rgba(217, 119, 6, 0.35);
+    }
+
+    .btn-top {
+      background-color: rgba(255, 255, 255, 0.12);
+      color: #e5e7eb;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      margin-top: 8px;
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 24px;
+      text-align: center;
+      color: #a7c4b5;
+      font-size: calc(12px + var(--font-delta));
+      line-height: 1.7;
+    }
+
+    /* Modal Backdrop (Shared for QRIS & Font Settings) */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.72);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 100;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-card {
+      background: #ffffff;
+      border-radius: 16px;
+      max-width: 350px;
+      width: 100%;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .modal-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: #111827;
+      margin-bottom: 12px;
+    }
+
+    .qris-box {
+      background: #f9fafb;
+      border: 1px dashed #9ca3af;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 14px;
+    }
+
+    .qris-box img {
+      width: 100%;
+      max-width: 250px;
+      height: auto;
+      border-radius: 8px;
+      display: block;
+      margin: 0 auto;
+    }
+
+    /* Font Settings Dialog Specifics */
+    .font-controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .font-ctrl-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      padding: 10px 6px;
+      border-radius: 10px;
+      border: 1px solid #d1d5db;
+      background-color: #f9fafb;
+      color: #18221d;
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .font-ctrl-btn i {
+      font-size: 16px;
+      color: #0D3B31;
+    }
+
+    .font-ctrl-btn:hover:not(:disabled) {
+      background-color: #CCB47A;
+      border-color: #CCB47A;
+      color: #142218;
+    }
+
+    .font-ctrl-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .font-size-indicator {
+      font-size: 12px;
+      font-weight: 700;
+      color: #0D3B31;
+      margin-bottom: 10px;
+    }
+
+    .font-preview-box {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 12px;
+      text-align: left;
+      margin-bottom: 14px;
+    }
+
+    .font-preview-label {
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #6e7d75;
+      margin-bottom: 4px;
+    }
+
+    .modal-close {
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      background: #0D3B31;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body id="top">
+  <div class="page-wrapper">
+    <!-- HEADER & NAVIGATION -->
+    <header class="top-header" id="topHeader">
+      <div class="header-bar">
+        <button type="button" class="header-icon-btn" id="toggleSearchBtn" aria-label="Cari aturan" title="Cari aturan">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+
+        <div class="site-title">MAHJONG BANDUNG YDSP SYSTEM</div>
+
+        <button type="button" class="header-icon-btn" id="openFontModalBtn" aria-label="Pengaturan ukuran huruf" title="Ukuran Huruf">
+          <i class="fa-solid fa-text-height"></i>
+        </button>
+      </div>
+
+      <!-- Search Input Drawer -->
+      <div class="search-bar-wrap" id="searchBarWrap">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input
+          type="search"
+          id="searchInput"
+          class="search-input"
+          placeholder="Cari istilah, poin, atau penjelasan..."
+          autocomplete="off"
+        />
+        <button type="button" class="search-clear-btn" id="clearSearchBtn" aria-label="Hapus pencarian">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="search-status" id="searchStatus"></div>
+
+      <nav class="nav-pills" id="navPills" aria-label="Kategori Aturan">
+        <a class="nav-pill active" href="#cara-menang">CARA MENANG</a>
+        <a class="nav-pill" href="#kombinasi-angka">KOMBINASI ANGKA</a>
+        <a class="nav-pill" href="#bunga">BUNGA</a>
+        <a class="nav-pill" href="#naga-dan-angin">NAGA DAN ANGIN</a>
+        <a class="nav-pill" href="#kartu-spesial">KARTU SPESIAL</a>
+        <a class="nav-pill" href="#joker-spesial">JOKER SPESIAL</a>
+        <a class="nav-pill" href="#tangan-spesial">TANGAN SPESIAL</a>
+        <a class="nav-pill" href="#penalti">PENALTI</a>
+        <a class="nav-pill" href="#istilah-istilah">ISTILAH</a>
+        <a class="nav-pill" href="#unduh-pdf">UNDUH PDF</a>
+      </nav>
+    </header>
+
+    <main class="container">
+      <div class="subtitle-banner">
+        SISTEM PERHITUNGAN TAY MAHJONG VERSI BANDUNG YDSP (REVISI 5)
+      </div>
+
+      <div class="no-results-box" id="noResultsBox">
+        Tidak ada aturan atau istilah yang cocok dengan pencarian Anda.
+      </div>
+
+      <!-- 1. CARA MENANG -->
+      <section id="cara-menang" class="section-block">
+        <div class="section-title">CARA MENANG</div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Hu</div>
+            </div>
+          </div>
+          <p class="rule-desc">Menang minimal 5 poin (tay). Boleh makan dari semua pemain.</p>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Ce Mo</div>
+              <div class="rule-en">(Self-Draw)</div>
+              <div class="rule-cn">自摸</div>
+            </div>
+            <div class="point-badge">1</div>
+          </div>
+          <p class="rule-desc">Menang dengan kartu terakhir untuk Hu ambil sendiri (liu) dari tembok (cangkulan).</p>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Mun</div>
+              <div class="rule-en">(Concealed Hand)</div>
+              <div class="rule-cn">門前清</div>
+            </div>
+            <div class="point-badge">1</div>
+          </div>
+          <p class="rule-desc">Tidak pernah ambil (CHOW atau PUNG) dari orang lain, hanya kartu terakhir yang makan dari orang lain untuk Hu.</p>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Ce Mo Pu Ciu Jen</div>
+              <div class="rule-en">(Fully Concealed)</div>
+              <div class="rule-cn">門前清自摸 / 自摸不求人</div>
+            </div>
+            <div class="point-badge">5</div>
+          </div>
+          <p class="rule-desc">Hu tanpa bantuan orang lain (tanpa cia, pung, kong dari orang lain). Kartu terakhir untuk menang ambil sendiri dari tembok.</p>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Kim</div>
+              <div class="rule-en">(Joker/Wildcard)</div>
+              <div class="rule-cn">金</div>
+            </div>
+            <div class="point-badge">1</div>
+          </div>
+          <p class="rule-desc">Joker. Setiap joker bernilai satu, kecuali kalau punya 4, nilainya 40. (Baca lebih lanjut di aturan JOKER SPESIAL)</p>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Bo Kim</div>
+              <div class="rule-en">(No Joker)</div>
+              <div class="rule-cn">無金</div>
+            </div>
+            <div class="point-badge">3</div>
+          </div>
+          <p class="rule-desc">Menang tanpa joker. Tidak punya kartu joker.</p>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Chiong Kong</div>
+              <div class="rule-en">(Robbing the Kong)</div>
+              <div class="rule-cn">搶槓</div>
+            </div>
+            <div class="point-badge">5</div>
+          </div>
+          <p class="rule-desc">Merebut kartu yang akan di-kong oleh pemain lain, kita pakai untuk Hu.</p>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Ce Chiong Kong (?)</div>
+            </div>
+            <div class="point-badge">5</div>
+          </div>
+          <p class="rule-desc">Ada pung dan kartu ke-4 dipakai untuk seri (seri harus ada di dalam/tertutup) dan harus ce mo.</p>
+          <p class="rule-desc">Setelah pung tris, kartu ke-4 ce mo dipakai sendiri (harus ce mo).</p>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Kong Song Hu</div>
+              <div class="rule-en">(Win by Kong Replacement)</div>
+              <div class="rule-cn">槓上開花</div>
+            </div>
+            <div class="point-badge">5</div>
+          </div>
+          <p class="rule-desc">Ambil pengganti kong, dan Hu.</p>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Kong Kong Hu</div>
+              <div class="rule-en">(Double Kong Replacement)</div>
+              <div class="rule-cn">槓上槓</div>
+            </div>
+            <div class="point-badge">30</div>
+          </div>
+          <p class="rule-desc">Hu dari pengganti kong yang kedua kalinya berturut-turut.</p>
+        </div>
+      </section>
+
+      <!-- 2. KOMBINASI ANGKA -->
+      <section id="kombinasi-angka" class="section-block">
+        <div class="section-title">KOMBINASI ANGKA</div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Ji Pa Ciok</div>
+              <div class="rule-en">(2-8 Pair)</div>
+              <div class="rule-cn">二八脚</div>
+            </div>
+            <div class="point-badge">1</div>
+          </div>
+          <p class="rule-desc">Menang dengan kaki atau pair sepasang angka 2 atau 8.</p>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Ping Hu</div>
+              <div class="rule-en">(All Chows)</div>
+              <div class="rule-cn">平胡</div>
+            </div>
+            <div class="point-badge">3</div>
+          </div>
+          <p class="rule-desc">Semua set adalah chow (seri) ditambah 1 pair.</p>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Tuei Tuei Hu</div>
+              <div class="rule-en">(All Pungs)</div>
+              <div class="rule-cn">對對胡</div>
+            </div>
+            <div class="dual-points">
+              <div class="kim-box ada"><span class="kim-label">Ada Kim</span><span class="kim-val">5</span></div>
+              <div class="kim-box bo"><span class="kim-label">Bo Kim</span><span class="kim-val">10</span></div>
+            </div>
+          </div>
+          <p class="rule-desc">Semua set adalah pung (tris) ditambah 1 Pair.</p>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Tan Tiau</div>
+              <div class="rule-en">(Melded Hand)</div>
+              <div class="rule-cn">全求人</div>
+            </div>
+            <div class="point-badge">5</div>
+          </div>
+          <p class="rule-desc">Chow atau pung terus, sampai sisa 1 kartu di tangan (tinggal cari kaki/pair).</p>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Sam Am Kang</div>
+              <div class="rule-en">(Three Concealed Pungs)</div>
+              <div class="rule-cn">三暗刻</div>
+            </div>
+            <div class="point-badge">5</div>
+          </div>
+          <p class="rule-desc">Tiga tris yang jadi di dalam (hasil ambil kartu sendiri, bukan makan buangan orang). Kartu untuk Hu tidak boleh bagian dari ke-3 tris tersebut apabila diambil dari pemain lain.</p>
+          <div class="tile-hand" data-tiles="2m2mx_5s5sx_8t8tx_6s7s8s_9t9t"></div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Si Am Kang</div>
+              <div class="rule-en">(Four Concealed Pungs)</div>
+              <div class="rule-cn">坎坎胡 / 四暗刻</div>
+            </div>
+            <div class="dual-points">
+              <div class="kim-box ada"><span class="kim-label">Ada Kim</span><span class="kim-val">40</span></div>
+              <div class="kim-box bo"><span class="kim-label">Bo Kim</span><span class="kim-val">50</span></div>
+            </div>
+          </div>
+          <p class="rule-desc">Empat tris yang jadi di dalam (tanpa dimainkan 10 poin).</p>
+          <div class="tile-hand" data-tiles="2m2mx_7m7mx_5s5sx_8t8tx_9t9t"></div>
+        </div>
+      </section>
+
+      <!-- 3. BUNGA -->
+      <section id="bunga" class="section-block">
+        <div class="section-title">BUNGA</div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Bunga Merah</div>
+              <div class="rule-en">(Season Tiles)</div>
+              <div class="rule-cn">季牌 / 红牌</div>
+            </div>
+            <div class="point-badge">1</div>
+          </div>
+          <p class="rule-desc">Setiap bunga merah bernilai 1 poin; angka yang sesuai dengan nomor duduk bernilai 1 poin ekstra.</p>
+          <div class="tile-hand" data-tiles="1rf_2rf_3rf_4rf"></div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Bunga Hitam</div>
+              <div class="rule-en">(Flower Tiles)</div>
+              <div class="rule-cn">花牌</div>
+            </div>
+            <div class="point-badge">1</div>
+          </div>
+          <p class="rule-desc">Angka yang sesuai dengan nomor duduk bernilai 1 poin.</p>
+          <div class="tile-hand" data-tiles="1bf_2bf_3bf_4bf"></div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Bo Hua Ce</div>
+              <div class="rule-en">(No Flowers and Honors)</div>
+              <div class="rule-cn">無花字</div>
+            </div>
+            <div class="point-badge">3</div>
+          </div>
+          <p class="rule-desc">Tidak punya bunga maupun surat (tung, nan, si, pei, cung, fat, pai) sama sekali.</p>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Empat Bunga Hitam</div>
+              <div class="rule-en">(Four Flowers Set)</div>
+              <div class="rule-cn">一台花 / 四花牌 / 四君子</div>
+            </div>
+            <div class="point-badge">10</div>
+          </div>
+          <p class="rule-desc">Semua bunga hitam di tangan, pada saat terjadi dibayar 4 poin oleh semua lawan.</p>
+          <div class="tile-hand" data-tiles="1bf2bf3bf4bf"></div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Empat Bunga Merah</div>
+              <div class="rule-en">(Four Seasons Set)</div>
+              <div class="rule-cn">一台花 / 四季牌 / 四红牌</div>
+            </div>
+            <div class="point-badge">20</div>
+          </div>
+          <p class="rule-desc">Semua bunga merah di tangan, pada saat terjadi dibayar 8 poin oleh semua lawan.</p>
+          <div class="tile-hand" data-tiles="1rf2rf3rf4rf"></div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Tujuh Bunga</div>
+              <div class="rule-en">(Seven Flowers)</div>
+              <div class="rule-cn">花糊</div>
+            </div>
+            <div class="point-badge">30</div>
+          </div>
+          <p class="rule-desc">Tujuh bunga di tangan (tanpa dimainkan 10).</p>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Delapan Bunga</div>
+              <div class="rule-en">(Eight Flowers)</div>
+              <div class="rule-cn">八仙過海 / 大花糊</div>
+            </div>
+            <div class="point-badge">60</div>
+          </div>
+          <p class="rule-desc">Delapan bunga di tangan (tanpa dimainkan 30).</p>
+          <div class="tile-hand" data-tiles="1rf2rf3rf4rf_1bf2bf3bf4bf"></div>
+        </div>
+      </section>
+
+      <!-- 4. NAGA DAN ANGIN -->
+      <section id="naga-dan-angin" class="section-block">
+        <div class="section-title">NAGA DAN ANGIN</div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Cung (Naga Merah)</div>
+              <div class="rule-en">(Red Dragon)</div>
+              <div class="rule-cn">红中</div>
+            </div>
+            <div class="point-badge">2</div>
+          </div>
+          <p class="rule-desc">Cung di tris.</p>
+          <div class="tile-hand" data-tiles="rrr"></div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Fat (Naga Hijau)</div>
+              <div class="rule-en">(Green Dragon)</div>
+              <div class="rule-cn">發財</div>
+            </div>
+            <div class="point-badge">1</div>
+          </div>
+          <p class="rule-desc">Fat di tris.</p>
+          <div class="tile-hand" data-tiles="ggg"></div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Pai (Naga Putih)</div>
+              <div class="rule-en">(White Dragon)</div>
+              <div class="rule-cn">白板</div>
+            </div>
+            <div class="point-badge">1</div>
+          </div>
+          <p class="rule-desc">Pai di tris.</p>
+          <div class="tile-hand" data-tiles="www"></div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Siau San Yen</div>
+              <div class="rule-en">(Small Three Dragons)</div>
+              <div class="rule-cn">小三元</div>
+            </div>
+            <div class="dual-points">
+              <div class="kim-box ada"><span class="kim-label">Ada Kim</span><span class="kim-val">10</span></div>
+              <div class="kim-box bo"><span class="kim-label">Bo Kim</span><span class="kim-val">20</span></div>
+            </div>
+          </div>
+          <p class="rule-desc">Dua jenis Kartu Naga (Cung, Fat, atau Pat) dijadikan Tris/Pung; dan Kartu Naga ke-3 dijadikan pair.</p>
+          <div class="tile-hand" data-tiles="rrr_ggg_ww_1m2m3m_5t5t5t"></div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Ta San Yen</div>
+              <div class="rule-en">(Big Three Dragons)</div>
+              <div class="rule-cn">大三元</div>
+            </div>
+            <div class="dual-points">
+              <div class="kim-box ada"><span class="kim-label">Ada Kim</span><span class="kim-val">30</span></div>
+              <div class="kim-box bo"><span class="kim-label">Bo Kim</span><span class="kim-val">40</span></div>
+            </div>
+          </div>
+          <p class="rule-desc">Tiga jenis Kartu Naga (Cung, Fat, atau Pat) dijadikan Tris/Pung (tanpa dimainkan 10 poin).</p>
+          <div class="tile-hand" data-tiles="rrr_ggg_www_1m2m3m_7s7s"></div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Angin</div>
+              <div class="rule-en">(Wind Tiles)</div>
+              <div class="rule-cn">風牌</div>
+            </div>
+            <div class="point-badge">1</div>
+          </div>
+          <p class="rule-desc">Tris/pung Kartu Angin yang sesuai dengan Angin Duduk atau sesuai dengan Angin Meja.</p>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Siau Se Si</div>
+              <div class="rule-en">(Small Four Winds)</div>
+              <div class="rule-cn">小四喜</div>
+            </div>
+            <div class="dual-points">
+              <div class="kim-box ada"><span class="kim-label">Ada Kim</span><span class="kim-val">30</span></div>
+              <div class="kim-box bo"><span class="kim-label">Bo Kim</span><span class="kim-val">40</span></div>
+            </div>
+          </div>
+          <p class="rule-desc">Tiga jenis Kartu Angin (Tung, Nan, Si, atau Pei) dijadikan tris/pung atau kong, satu jenis Kartu Angin sisanya dijadikan pair.</p>
+          <div class="tile-hand" data-tiles="EEE_SSS_NNN_1m2m3m_WW"></div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Ta Se Si</div>
+              <div class="rule-en">(Big Four Winds)</div>
+              <div class="rule-cn">大四喜</div>
+            </div>
+            <div class="dual-points">
+              <div class="kim-box ada"><span class="kim-label">Ada Kim</span><span class="kim-val">50</span></div>
+              <div class="kim-box bo"><span class="kim-label">Bo Kim</span><span class="kim-val">60</span></div>
+            </div>
+          </div>
+          <p class="rule-desc">Semua Kartu Angin (Tung, Nan, Si, dan Pei) dijadikan tris/pung atau kong.</p>
+          <div class="tile-hand" data-tiles="EEE_SSS_WWW_NNN_3t3t"></div>
+        </div>
+      </section>
+
+      <!-- 5. KARTU SPESIAL -->
+      <section id="kartu-spesial" class="section-block">
+        <div class="section-title">KARTU SPESIAL</div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Cau It</div>
+              <div class="rule-en">(Mixed Flush)</div>
+              <div class="rule-cn">混一色 / 凑一色</div>
+            </div>
+            <div class="dual-points">
+              <div class="kim-box ada"><span class="kim-label">Ada Kim</span><span class="kim-val">5</span></div>
+              <div class="kim-box bo"><span class="kim-label">Bo Kim</span><span class="kim-val">10</span></div>
+            </div>
+          </div>
+          <p class="rule-desc">Semua kartu terdiri dari satu suit + surat.</p>
+          <div class="tile-hand" data-tiles="1s2s3s_2s3s4s_6s6s6s_EEE_rr"></div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Cau It Yau Ciu</div>
+              <div class="rule-en">(Mixed Terminals)</div>
+              <div class="rule-cn">混幺九 / 凑幺九</div>
+            </div>
+            <div class="dual-points">
+              <div class="kim-box ada"><span class="kim-label">Ada Kim</span><span class="kim-val">10</span></div>
+              <div class="kim-box bo"><span class="kim-label">Bo Kim</span><span class="kim-val">20</span></div>
+            </div>
+          </div>
+          <p class="rule-desc">Untuk setiap suit, hanya terdiri dari angka 1 dan 9, ditambah huruf.</p>
+          <div class="tile-hand" data-tiles="1m1m1m_9m9m9m_1t1t1t_EEE_rr"></div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Yau Ciu</div>
+              <div class="rule-en">(All Terminals)</div>
+              <div class="rule-cn">清幺九</div>
+            </div>
+            <div class="dual-points">
+              <div class="kim-box ada"><span class="kim-label">Ada Kim</span><span class="kim-val">30</span></div>
+              <div class="kim-box bo"><span class="kim-label">Bo Kim</span><span class="kim-val">40</span></div>
+            </div>
+          </div>
+          <p class="rule-desc">Semua kartu hanya terdiri dari tris angka 1 dan 9.</p>
+          <div class="tile-hand" data-tiles="1m1m1m_9m9m9m_1t1t1t_9s9s9s_1s1s"></div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Ie Set</div>
+              <div class="rule-en">(Full Flush)</div>
+              <div class="rule-cn">清一色</div>
+            </div>
+            <div class="dual-points">
+              <div class="kim-box ada"><span class="kim-label">Ada Kim</span><span class="kim-val">20</span></div>
+              <div class="kim-box bo"><span class="kim-label">Bo Kim</span><span class="kim-val">30</span></div>
+            </div>
+          </div>
+          <p class="rule-desc">Semua kartu terdiri dari satu suit.</p>
+          <div class="tile-hand" data-tiles="1t2t3t_3t4t5t_7t7t7t_9t9t9t_8t8t"></div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Ie Set Ping Hu</div>
+              <div class="rule-en">(Full Flush All Chows)</div>
+              <div class="rule-cn">清一色 平胡</div>
+            </div>
+            <div class="dual-points">
+              <div class="kim-box ada"><span class="kim-label">Ada Kim</span><span class="kim-val">30</span></div>
+              <div class="kim-box bo"><span class="kim-label">Bo Kim</span><span class="kim-val">40</span></div>
+            </div>
+          </div>
+          <p class="rule-desc">4 seri + 1 pair semuanya dari 1 suit.</p>
+          <div class="tile-hand" data-tiles="123m_345m_456m_789m_99m"></div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Ie Set Tuei Tuei</div>
+              <div class="rule-en">(Full Flush All Pungs)</div>
+              <div class="rule-cn">清一色 對對胡</div>
+            </div>
+            <div class="dual-points">
+              <div class="kim-box ada"><span class="kim-label">Ada Kim</span><span class="kim-val">40</span></div>
+              <div class="kim-box bo"><span class="kim-label">Bo Kim</span><span class="kim-val">50</span></div>
+            </div>
+          </div>
+          <p class="rule-desc">4 tris + 1 pair semuanya 1 suit.</p>
+          <div class="tile-hand" data-tiles="333t_555t_666t_888t_99t"></div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Ie Set Surat</div>
+              <div class="rule-en">(All Honors)</div>
+              <div class="rule-cn">字一色</div>
+            </div>
+            <div class="dual-points">
+              <div class="kim-box ada"><span class="kim-label">Ada Kim</span><span class="kim-val">40</span></div>
+              <div class="kim-box bo"><span class="kim-label">Bo Kim</span><span class="kim-val">60</span></div>
+            </div>
+          </div>
+          <p class="rule-desc">Semua kartu terdiri dari tris surat (angin &amp; naga).</p>
+          <div class="tile-hand" data-tiles="EEE_SSS_NNN_rrr_gg"></div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Chi Tuei</div>
+              <div class="rule-en">(Seven Pairs)</div>
+              <div class="rule-cn">七對子</div>
+            </div>
+            <div class="dual-points">
+              <div class="kim-box ada"><span class="kim-label">Ada Kim</span><span class="kim-val">10</span></div>
+              <div class="kim-box bo"><span class="kim-label">Bo Kim</span><span class="kim-val">20</span></div>
+            </div>
+          </div>
+          <p class="rule-desc">Tujuh pair. Hanya kartu terakhir yang boleh ambil dari orang lain atau ce mo. Tidak boleh ada pair yang berulang (tidak boleh ada kong).</p>
+          <div class="tile-hand" data-tiles="11m_55m_88m_33t_88s_EE_rr"></div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Chi Tuei Cau It</div>
+              <div class="rule-en">(Seven Pairs Mixed Flush)</div>
+              <div class="rule-cn">七對子 混一色</div>
+            </div>
+            <div class="dual-points">
+              <div class="kim-box ada"><span class="kim-label">Ada Kim</span><span class="kim-val">20</span></div>
+              <div class="kim-box bo"><span class="kim-label">Bo Kim</span><span class="kim-val">30</span></div>
+            </div>
+          </div>
+          <p class="rule-desc">7 pair, 1 suit ditambah angin atau naga.</p>
+          <div class="tile-hand" data-tiles="11s_33s_44s_66s_77s_EE_NN"></div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Chi Tuei Ping Hu</div>
+              <div class="rule-en">(Seven Pairs All Chows)</div>
+              <div class="rule-cn">七對子 平胡</div>
+            </div>
+            <div class="dual-points">
+              <div class="kim-box ada"><span class="kim-label">Ada Kim</span><span class="kim-val">20</span></div>
+              <div class="kim-box bo"><span class="kim-label">Bo Kim</span><span class="kim-val">30</span></div>
+            </div>
+          </div>
+          <p class="rule-desc">7 pair semua seri.</p>
+          <div class="tile-hand" data-tiles="55t_66t_77t_11s_22s_33s_66m"></div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Chi Tuei Cau It Yau Ciu</div>
+              <div class="rule-en">(Seven Pairs Mixed Terminals)</div>
+              <div class="rule-cn">七對子 凑幺九</div>
+            </div>
+            <div class="dual-points">
+              <div class="kim-box ada"><span class="kim-label">Ada Kim</span><span class="kim-val">30</span></div>
+              <div class="kim-box bo"><span class="kim-label">Bo Kim</span><span class="kim-val">40</span></div>
+            </div>
+          </div>
+          <p class="rule-desc">7 pair hanya dengan angka 1 dan 9 ditambah angin atau naga.</p>
+          <div class="tile-hand" data-tiles="11m_99m_11t_11s_99s_EE_rr"></div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Chi Tuei Yau Ciu</div>
+              <div class="rule-en">(Seven Pairs All Terminals)</div>
+              <div class="rule-cn">七對子 清幺九</div>
+            </div>
+            <div class="dual-points">
+              <div class="kim-box ada"><span class="kim-label">Ada Kim</span><span class="kim-val">40</span></div>
+              <div class="kim-box bo"><span class="kim-label">Bo Kim</span><span class="kim-val">50</span></div>
+            </div>
+          </div>
+          <p class="rule-desc">7 pair hanya dengan angka dan 9 (akan ada pair yang diulang).</p>
+          <div class="tile-hand" data-tiles="11m_99m_11t_99t_11s_11s_99s"></div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Chi Tuei Ie Set</div>
+              <div class="rule-en">(Seven Pairs Full Flush)</div>
+              <div class="rule-cn">七對子 清一色</div>
+            </div>
+            <div class="dual-points">
+              <div class="kim-box ada"><span class="kim-label">Ada Kim</span><span class="kim-val">40</span></div>
+              <div class="kim-box bo"><span class="kim-label">Bo Kim</span><span class="kim-val">50</span></div>
+            </div>
+          </div>
+          <p class="rule-desc">7 pair semua terdiri dari 1 suit.</p>
+          <div class="tile-hand" data-tiles="11s_22s_44s_55s_66s_88s_99s"></div>
+        </div>
+      </section>
+
+      <!-- 6. JOKER SPESIAL -->
+      <section id="joker-spesial" class="section-block">
+        <div class="section-title">JOKER SPESIAL</div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Pyong Pi</div>
+            </div>
+            <div class="point-badge">5</div>
+          </div>
+          <p class="rule-desc">Sudah berhasil membentuk 4 set, tinggal sisa joker, kartu apa pun yang diambil jadi kaki/pair. Pada kondisi itu, setelah liu, kim dibuka dan melaporkan Pyong Pi. Setelah satu putaran kembali lagi ke giliran kita, dan kita menyatakan Hu, maka itu adalah Pyong Pi 1 putaran.</p>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Pyong Pi hitung 4</div>
+            </div>
+            <div class="point-badge">10</div>
+          </div>
+          <p class="rule-desc">Dihitung sampai dengan putaran ke-4. Di putaran ke-4, jika berhasil Hu, baru tambah 10 poin. Apabila dibatalkan sebelum putaran ke-4, tidak ditambahkan apa pun.</p>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Pyong Pi hitung 6</div>
+            </div>
+            <div class="point-badge">30</div>
+          </div>
+          <p class="rule-desc">Dihitung sampai dengan putaran ke-6. Di putaran ke-6, jika berhasil Hu, baru tambah 10 poin. Apabila dibatalkan sebelum putaran ke-4, tidak ditambahkan apa pun. Maksimal putaran pyong pi adlah ke-6.</p>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Pyong Pi Pu Ciu Jen</div>
+            </div>
+            <div class="point-badge">10</div>
+          </div>
+          <p class="rule-desc">Tanpa bantuan dari orang lain (tidak cia atau pung) dan sisa joker, kartu apa pun yang diambil jadi kaki/pair.</p>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Kim Ciok</div>
+              <div class="rule-en">(Joker Paired)</div>
+              <div class="rule-cn">金脚</div>
+            </div>
+            <div class="point-badge">20</div>
+          </div>
+          <p class="rule-desc">Kim 2 buah dijadikan pair.</p>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Kim Thi</div>
+              <div class="rule-en">(Joker as Set)</div>
+              <div class="rule-cn">金黐</div>
+            </div>
+            <div class="point-badge">30</div>
+          </div>
+          <p class="rule-desc">Kim 3 buah dijadikan chow atau pung. Apabila membentuk kombinasi Ping Hu atau Tuei Tuei, poin kombinasi tersebut ditambahkan juga.</p>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Empat Kim (Si Kim)</div>
+              <div class="rule-en">(Four Joker)</div>
+              <div class="rule-cn">四金</div>
+            </div>
+            <div class="point-badge">40</div>
+          </div>
+          <p class="rule-desc">Berhasil mengumpulkan 4 kim. Nilai 40 didapatkan hanya jika berhasil Hu. Bila memilih tidak dimainkan, hanya dapat 10 poin.</p>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Chin Kim (?)</div>
+            </div>
+            <div class="point-badge">30</div>
+          </div>
+          <p class="rule-desc">Ambil Kim dari buangan pemain lain, harus di tengah (terjepit) dan sesuai kartu yang diperlukan untuk Hu (harus dibuka 2 kartu buktinya).</p>
+        </div>
+      </section>
+
+      <!-- 7. TANGAN SPESIAL -->
+      <section id="tangan-spesial" class="section-block">
+        <div class="section-title">TANGAN SPESIAL</div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Pao Chin</div>
+              <div class="rule-en">(First-Turn Ready)</div>
+              <div class="rule-cn">报听</div>
+            </div>
+            <div class="dual-points">
+              <div class="kim-box ada"><span class="kim-label">Ada Kim</span><span class="kim-val">20</span></div>
+              <div class="kim-box bo"><span class="kim-label">Bo Kim</span><span class="kim-val">30</span></div>
+            </div>
+          </div>
+          <p class="rule-desc">Di awal permainan setelah kartu dibagi, hanya perlu 1 kartu lagi untuk Hu; harus diumumkan di awal permainan.</p>
+          <p class="rule-desc">Putaran pertama liu bisa mendapatkan Thi Hu. Apabila Thi Hu gagal, Pao Chin tetap berlaku.</p>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Se Sam Pu Tap</div>
+              <div class="rule-en">(Thirteen Unconnected)</div>
+              <div class="rule-cn">十三不靠</div>
+            </div>
+            <div class="dual-points">
+              <div class="kim-box ada"><span class="kim-label">Ada Kim</span><span class="kim-val">–</span></div>
+              <div class="kim-box bo"><span class="kim-label">Bo Kim</span><span class="kim-val">40</span></div>
+            </div>
+          </div>
+          <p class="rule-desc">Semua kartu tidak nyambung (tidak ada pair, angka harus minimal loncat 2 dalam suit yang sama). Tidak bisa disusun dalam permainan (hanya dari awal ketika kartu dibagikan), tidak boleh punya bunga, tidak boleh punya kim.</p>
+          <div class="tile-hand" data-tiles="1m_4m_7m_2t_5t_8t_3s_6s_9s_E_S_W_r_g"></div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Cap Sa Yauw</div>
+              <div class="rule-en">(Thirteen Orphans)</div>
+              <div class="rule-cn">十三幺</div>
+            </div>
+            <div class="dual-points">
+              <div class="kim-box ada"><span class="kim-label">Ada Kim</span><span class="kim-val">40</span></div>
+              <div class="kim-box bo"><span class="kim-label">Bo Kim</span><span class="kim-val">60</span></div>
+            </div>
+          </div>
+          <p class="rule-desc">1 wan, 9 wan, 1 tong, 9 tong, 1 sok, 9 sok, tung, nan, si, pei, cung, fat, pat +1 antaranya.</p>
+          <div class="tile-hand" data-tiles="19m_19t_19s_ESWN_rgw_N"></div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Thi Hu</div>
+              <div class="rule-en">(Blessing of Earth)</div>
+              <div class="rule-cn">地糊</div>
+            </div>
+            <div class="dual-points">
+              <div class="kim-box ada"><span class="kim-label">Ada Kim</span><span class="kim-val">40</span></div>
+              <div class="kim-box bo"><span class="kim-label">Bo Kim</span><span class="kim-val">60</span></div>
+            </div>
+          </div>
+          <p class="rule-desc">Hu dari kartu buangan yang paling pertama (dari pemain pertama) diawali dengan pengumuman Pao Chin. Semua bayar dobel.</p>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Thian Hu</div>
+              <div class="rule-en">(Blessing of Heaven)</div>
+              <div class="rule-cn">天糊</div>
+            </div>
+            <div class="dual-points">
+              <div class="kim-box ada"><span class="kim-label">Ada Kim</span><span class="kim-val">40</span></div>
+              <div class="kim-box bo"><span class="kim-label">Bo Kim</span><span class="kim-val">60</span></div>
+            </div>
+          </div>
+          <p class="rule-desc">Setelah dibagi kartu, 14 kartu langsung Hu. Hanya bisa terjadi pada orang pertama dengan 14 kartu. Semua bayar dobel.</p>
+        </div>
+      </section>
+
+      <!-- 8. PENALTI -->
+      <section id="penalti" class="section-block">
+        <div class="section-title">PENALTI</div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Ta Cung</div>
+              <div class="rule-cn">出銃</div>
+            </div>
+          </div>
+          <p class="rule-desc">Pemain yang membuang kartu dan menjadikan pemain lain menang.</p>
+          <div class="penalty-effect">Denda (bayar) 2x dari total poin pemenang.</div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Kartu Lebih atau Kurang</div>
+            </div>
+          </div>
+          <p class="rule-desc">Kurang kartu atau lebih kartu on hand dalam permainan. Setelah ketahuan langsung penalti.</p>
+          <div class="penalty-effect">Liu Fit. 流罚 — Hanya boleh liu dan langsung buang sampai akhir ronde, tidak boleh hu, tidak boleh makan.</div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Salah Cia atau Pung</div>
+            </div>
+          </div>
+          <p class="rule-desc">Cia atau pung yang tidak sesuai, setelah ketahuan, langsung penalti.</p>
+          <div class="penalty-effect">Liu Fit. 流罚 — Hanya boleh liu dan langsung buang sampai akhir ronde, tidak boleh hu, tidak boleh makan.</div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Cia atau Pung Pakai Kim</div>
+            </div>
+          </div>
+          <p class="rule-desc">Cia atau pung menggunakan Kim di dalam cia atau pung-nya. Setelah ketahuan, langsung penalti.</p>
+          <div class="penalty-effect">Liu Fit. 流罚 — Hanya boleh liu dan langsung buang sampai akhir ronde, tidak boleh hu, tidak boleh makan.</div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Sudah Makan 3 kali Pair yang Sama</div>
+            </div>
+          </div>
+          <p class="rule-desc">Sudah makan 3 kali yang sejenis (ban, tong, atau sok), harus diumumkan oleh pemain yang sudah makan 3 kali tersebut.</p>
+          <div class="penalty-effect">Pemain yang buang bayar semua.</div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Sudah Pung Dua dari Tiga Naga</div>
+            </div>
+          </div>
+          <p class="rule-desc">Harus diumumkan oleh pemain yang pung tersebut.</p>
+          <div class="penalty-effect">Pemain yang buang bayar semua.</div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Hu Kurang dari 5 Poin</div>
+            </div>
+          </div>
+          <p class="rule-desc">Pemain mengumumkan Hu yang setelah dihitung kurang dari 5 poin.</p>
+          <div class="penalty-effect">Denda bayar 10 poin kepada tiap pemain, yang Ta Cung dibayar 20. Jika mengumumkan Hu kurang setelah liu sendiri, pemain lain semua dibayar masing-masing 20.</div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Angin Sesuai Ronde atau Duduk Dijadikan Kaki (Ciok)</div>
+            </div>
+          </div>
+          <p class="rule-desc">Apabila pemain menang dengan membuat Ping Hu, dan yang dijadikan kaki (ciok) adalah mata angin yang sesuai dengan angin ronde atau angin duduk si pemain itu, maka nilai Ping Hu-nya tidak dihitung (hilang).</p>
+          <div class="penalty-effect">Ping Hu tidak dihitung, NOL.</div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Cung/ Fat/ Pai Dijadikan Kaki Pada Saat Buat Kartu Ping Hu</div>
+            </div>
+          </div>
+          <p class="rule-desc">Kartu Naga Cung / Fat / Pai dijadikan kaki (ciok) pada saat menang dengan membuat tangan Ping Hu.</p>
+          <div class="penalty-effect">Ping Hu tidak dihitung, NOL.</div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top">
+            <div class="rule-title-group">
+              <div class="rule-name">Ce Mo Pu Ciu Jen / Ce Mo / Pyong Pi</div>
+            </div>
+          </div>
+          <p class="rule-desc">Pemain berhasil mendapat Ce Mo Pu Ciu Jen atau Ce Mo atau Pyong Pi.</p>
+          <div class="penalty-effect">Semua pemain lain bayar dobel.</div>
+        </div>
+      </section>
+
+      <!-- 9. ISTILAH-ISTILAH -->
+      <section id="istilah-istilah" class="section-block">
+        <div class="section-title">ISTILAH-ISTILAH</div>
+
+        <div class="rule-card">
+          <div class="rule-top"><div class="rule-title-group"><div class="rule-name">Hu / Fu</div><div class="rule-cn">糊</div></div></div>
+          <p class="rule-desc">Menang, jadi, atau nutup.</p>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top"><div class="rule-title-group"><div class="rule-name">Tay</div><div class="rule-cn">台 / 番</div></div></div>
+          <p class="rule-desc">Poin atau nilai.</p>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top"><div class="rule-title-group"><div class="rule-name">Hua</div><div class="rule-cn">花牌</div></div></div>
+          <p class="rule-desc">Bunga hitam / merah, ada angka 1–4.</p>
+          <div class="tile-hand" data-tiles="1234rf_1234bf"></div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top"><div class="rule-title-group"><div class="rule-name">Ban</div><div class="rule-cn">萬子</div></div></div>
+          <p class="rule-desc">Suit kartu 1 wan sampai 9 wan (puluh ribu).</p>
+          <div class="tile-hand" data-tiles="123456789m"></div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top"><div class="rule-title-group"><div class="rule-name">Tong</div><div class="rule-cn">筒子</div></div></div>
+          <p class="rule-desc">Suit kartu bulat / lingkaran.</p>
+          <div class="tile-hand" data-tiles="123456789t"></div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top"><div class="rule-title-group"><div class="rule-name">Sok</div><div class="rule-cn">索子</div></div></div>
+          <p class="rule-desc">Suit kartu bambu.</p>
+          <div class="tile-hand" data-tiles="123456789s"></div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top"><div class="rule-title-group"><div class="rule-name">Cung</div><div class="rule-cn">中</div></div></div>
+          <p class="rule-desc">Hung Cung atau Naga Merah.</p>
+          <div class="tile-hand" data-tiles="rrr"></div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top"><div class="rule-title-group"><div class="rule-name">Fat</div><div class="rule-cn">發</div></div></div>
+          <p class="rule-desc">Fat Chai atau Naga Hijau.</p>
+          <div class="tile-hand" data-tiles="ggg"></div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top"><div class="rule-title-group"><div class="rule-name">Pai</div><div class="rule-cn">白</div></div></div>
+          <p class="rule-desc">Pai Pan atau Naga Putih.</p>
+          <div class="tile-hand" data-tiles="www"></div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top"><div class="rule-title-group"><div class="rule-name">Tung Nan Si Pei</div></div></div>
+          <p class="rule-desc">Tung 東 = Timur<br />Nan 南 = Selatan<br />Si 西 = Barat<br />Pei 北 = Utara</p>
+          <div class="tile-hand" data-tiles="E_S_W_N"></div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top"><div class="rule-title-group"><div class="rule-name">Kim / Pao</div><div class="rule-cn">金 / 宝</div></div></div>
+          <p class="rule-desc">Joker. Kartu yang bisa dipakai sebagai pengganti kartu apa pun.</p>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top"><div class="rule-title-group"><div class="rule-name">Cong / Cong Ka</div><div class="rule-cn">莊 / 莊家</div></div></div>
+          <p class="rule-desc">Pemain yang lempar dadu. Bandar. Duduk di Timur.</p>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top"><div class="rule-title-group"><div class="rule-name">Lian Cong / Mun Cong</div><div class="rule-cn">连庄 / 冧庄</div></div></div>
+          <p class="rule-desc">Bandar menang dan lempar dadu lagi. Angin duduk tidak berubah.</p>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top"><div class="rule-title-group"><div class="rule-name">Liu</div><div class="rule-cn">流局</div></div></div>
+          <p class="rule-desc">Ambil kartu dari tumpukan.</p>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top"><div class="rule-title-group"><div class="rule-name">Cia</div><div class="rule-cn">吃 / 順子</div></div></div>
+          <p class="rule-desc">Makan kartu serian dari buangan pemain sebelumnya.</p>
+          <div class="tile-hand" data-tiles="2s3s__4s"></div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top"><div class="rule-title-group"><div class="rule-name">Pung / Pong</div><div class="rule-cn">碰</div></div></div>
+          <p class="rule-desc">Makan kartu tris, boleh dari buangan pemain manapun.</p>
+          <div class="tile-hand" data-tiles="77t__7t"></div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top"><div class="rule-title-group"><div class="rule-name">Kong</div><div class="rule-cn">槓</div></div></div>
+          <p class="rule-desc">Ada empat kartu yang sama. Bisa jadi sendiri atau ambil dari buangan, jangan lupa untuk ambil kartu pengganti dari ekor tumpukan.</p>
+          <div class="tile-hand" data-tiles="5555m"></div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top"><div class="rule-title-group"><div class="rule-name">Yau</div><div class="rule-cn">幺</div></div></div>
+          <p class="rule-desc">Angka 1.</p>
+          <div class="tile-hand" data-tiles="1m_1s_1t"></div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top"><div class="rule-title-group"><div class="rule-name">Ciu</div><div class="rule-cn">九</div></div></div>
+          <p class="rule-desc">Angka 9.</p>
+          <div class="tile-hand" data-tiles="9m_9s_9t"></div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top"><div class="rule-title-group"><div class="rule-name">Chin</div><div class="rule-cn">听牌</div></div></div>
+          <p class="rule-desc">Kurang 1 kartu sebelum Hu (ce ki).</p>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top"><div class="rule-title-group"><div class="rule-name">Ta Cung</div><div class="rule-cn">出銃</div></div></div>
+          <p class="rule-desc">Pemain yang membuang kartu, yang menyebabkan orang lain menang Hu.</p>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top"><div class="rule-title-group"><div class="rule-name">Kong</div><div class="rule-cn">槓</div></div></div>
+          <p class="rule-desc">Empat kartu (3 kartu dapat sendiri, ke-4 ambil dari orang) langsung dapat 1 koin dari semua pemain. Tidak masuk ke poin / tay akhir. Khusus Cung dapat 2 koin.</p>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top"><div class="rule-title-group"><div class="rule-name">Am Kong</div><div class="rule-cn">暗槓</div></div></div>
+          <p class="rule-desc">Empat kartu dapat sendiri (tidak pung). Langsung dapat 2 koin dari semua pemain. Tidak masuk ke poin / tay akhir.</p>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top"><div class="rule-title-group"><div class="rule-name">Empat Bunga Hitam</div></div></div>
+          <p class="rule-desc">Semua bunga hitam di 1 pemain, 4 koin dibayarkan langsung saat itu juga. Bunga dihitung lagi jika pemain menang.</p>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top"><div class="rule-title-group"><div class="rule-name">Empat Bunga Merah</div></div></div>
+          <p class="rule-desc">Semua bunga merah di 1 pemain, 8 koin dibayarkan langsung saat itu juga. Bunga dihitung lagi jika pemain menang.</p>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-top"><div class="rule-title-group"><div class="rule-name">Liu Fit</div><div class="rule-cn">流废 / 流罚</div></div></div>
+          <p class="rule-desc">Hanya boleh liu dan langsung buang, tidak boleh ditukar dengan kartu di tangan (lihat bagian penalti).</p>
+        </div>
+      </section>
+
+      <!-- BOTTOM ACTION BUTTONS (PDF, APLIKASI SKOR, QRIS) -->
+      <section id="unduh-pdf" class="actions-section" aria-label="Unduhan dan Aplikasi">
+        <a class="action-btn btn-pdf" href="docs/YDSP (rev5) INDO.pdf" download>
+          UNDUH PDF SIAP CETAK
+        </a>
+        <a class="action-btn btn-pdf" href="docs/YDSP (rev5) English.pdf" download>
+          Download Printable PDF [English Version]
+        </a>
+        <a class="action-btn btn-pdf" href="docs/YDSP (rev5) Chinese.pdf" download>
+          下载 PDF （中文版）
+        </a>
+
+        <a class="action-btn btn-app" href="https://iniberapa.skormahjong.com" target="_blank" rel="noopener">
+          APLIKASI HITUNG DAPAT BERAPA TAY OTOMATIS
+        </a>
+        <a class="action-btn btn-app" href="https://skormahjong.com" target="_blank" rel="noopener">
+          APLIKASI PENCATAT SKOR MAHJONG (HP)
+        </a>
+        <a class="action-btn btn-app" href="https://skormahjong.com/desktop" target="_blank" rel="noopener">
+          APLIKASI PENCATAT SKOR MAHJONG (DESKTOP)
+        </a>
+
+        <!-- Tombol Popup QRIS -->
+        <button type="button" class="action-btn btn-qris" id="openQrisBtn">
+          ☕ Traktir kopi untuk BUDIJOE [QRIS] ☕
+        </button>
+
+        <a class="action-btn btn-top" href="#top">
+          Return to Top
+        </a>
+      </section>
+
+      <!-- FOOTER -->
+      <footer class="footer">
+        <div>Updated on November 2026</div>
+        <div>Sorted by budijoe</div>
+        <div>Aligned with YDSP Fifth Revision</div>
+        <div>All Rights Reserved</div>
+      </footer>
+    </main>
+  </div>
+
+  <!-- MODAL PENGATURAN UKURAN HURUF -->
+  <div class="modal-backdrop" id="fontModal" role="dialog" aria-modal="true" aria-labelledby="fontModalTitle">
+    <div class="modal-card">
+      <div class="modal-title" id="fontModalTitle">Pengaturan Ukuran Huruf</div>
+
+      <div class="font-controls">
+        <button type="button" class="font-ctrl-btn" id="decreaseFontBtn" title="Kecilkan font (-1px)">
+          <i class="fa-solid fa-magnifying-glass-minus"></i>
+          <span>Kecilkan</span>
+        </button>
+
+        <button type="button" class="font-ctrl-btn" id="resetFontBtn" title="Reset ukuran font">
+          <i class="fa-solid fa-rotate-left"></i>
+          <span>Reset</span>
+        </button>
+
+        <button type="button" class="font-ctrl-btn" id="increaseFontBtn" title="Perbesar font (+1px)">
+          <i class="fa-solid fa-magnifying-glass-plus"></i>
+          <span>Perbesar</span>
+        </button>
+      </div>
+
+      <div class="font-size-indicator" id="fontSizeIndicator">Ukuran Deskripsi: 13px (Standar)</div>
+
+      <div class="font-preview-box">
+        <div class="font-preview-label">Contoh Tampilan Deskripsi:</div>
+        <p class="rule-desc">
+          Menang minimal 5 poin (tay). Kartu terakhir untuk jadi ambil sendiri (liu) atau makan dari pemain lain.
+        </p>
+      </div>
+
+      <button type="button" class="modal-close" id="closeFontBtn">Selesai</button>
+    </div>
+  </div>
+
+  <!-- MODAL QRIS -->
+  <div class="modal-backdrop" id="qrisModal" role="dialog" aria-modal="true" aria-labelledby="qrisModalTitle">
+    <div class="modal-card">
+      <div class="modal-title" id="qrisModalTitle">☕ Traktir kopi untuk BUDIJOE [QRIS] ☕</div>
+      <div class="qris-box">
+        <img src="./qris.png" alt="QRIS BUDIJOE" onerror="this.style.display='none'; document.getElementById('qrisFallback').style.display='block';" />
+        <p id="qrisFallback" style="display:none; font-size:12px; color:#4b5563; padding:20px 8px;">
+          Upload gambar QRIS Anda ke repository GitHub dengan nama <strong>qris.png</strong> (sejajar dengan <code>index.html</code>) agar muncul otomatis di kotak ini.
+        </p>
+      </div>
+      <button type="button" class="modal-close" id="closeQrisBtn">Tutup</button>
+    </div>
+  </div>
+
+  <script>
+    // ==========================================
+    // 1. RENDER SVG MAHJONG TILES WITH WHITE FRAME
+    // ==========================================
+    const SVG_MASTER = "https://raw.githubusercontent.com/budijoe/skor-mahjong/main/";
+
+    const TILE_SVG_MAP = {
+      '1m': 'svg/08-characters-1.svg',
+      '2m': 'svg/09-characters-2.svg',
+      '3m': 'svg/10-characters-3.svg',
+      '4m': 'svg/11-characters-4.svg',
+      '5m': 'svg/12-characters-5.svg',
+      '6m': 'svg/13-characters-6.svg',
+      '7m': 'svg/14-characters-7.svg',
+      '8m': 'svg/15-characters-8.svg',
+      '9m': 'svg/16-characters-9.svg',
+
+      '1s': 'svg/26-bamboos-1.svg',
+      '2s': 'svg/27-bamboos-2.svg',
+      '3s': 'svg/28-bamboos-3.svg',
+      '4s': 'svg/29-bamboos-4.svg',
+      '5s': 'svg/30-bamboos-5.svg',
+      '6s': 'svg/31-bamboos-6.svg',
+      '7s': 'svg/32-bamboos-7.svg',
+      '8s': 'svg/33-bamboos-8.svg',
+      '9s': 'svg/34-bamboos-9.svg',
+
+      '1t': 'svg/17-circles-1-variant-4.svg',
+      '2t': 'svg/18-circles-2.svg',
+      '3t': 'svg/19-circles-3.svg',
+      '4t': 'svg/20-circles-4.svg',
+      '5t': 'svg/21-circles-5.svg',
+      '6t': 'svg/22-circles-6.svg',
+      '7t': 'svg/23-circles-7.svg',
+      '8t': 'svg/24-circles-8.svg',
+      '9t': 'svg/25-circles-9.svg',
+
+      'r': 'svg/03-red-dragon.svg',
+      'g': 'svg/02-green-dragon.svg',
+      'w': 'svg/01-white-dragon.svg',
+
+      'E': 'svg/04-east-wind.svg',
+      'S': 'svg/05-south-wind.svg',
+      'W': 'svg/06-west-wind.svg',
+      'N': 'svg/07-north-wind.svg',
+
+      '1rf': 'svg/35-spring.svg',
+      '2rf': 'svg/36-summer.svg',
+      '3rf': 'svg/37-autumn.svg',
+      '4rf': 'svg/38-winter.svg',
+
+      '1bf': 'svg/39-plum.svg',
+      '2bf': 'svg/40-orchid.svg',
+      '3bf': 'svg/41-chrysanthemum.svg',
+      '4bf': 'svg/42-bamboo.svg',
+
+      'k': 'svg/44-joker-clown.svg'
+    };
+
+    function renderMahjongTiles() {
+      const tokenPattern = /([1-4]+)(rf|bf)|([1-9]+)([stm])|([rgwESWNkx])|([_\s]+)/g;
+      const containers = document.querySelectorAll('.tile-hand[data-tiles]');
+
+      containers.forEach((container) => {
+        const codeStr = (container.getAttribute('data-tiles') || '').trim();
+        container.innerHTML = '';
+
+        let match;
+        while ((match = tokenPattern.exec(codeStr)) !== null) {
+          if (match[1] && match[2]) {
+            for (const digit of match[1]) {
+              appendTile(container, digit + match[2]);
+            }
+          } else if (match[3] && match[4]) {
+            for (const digit of match[3]) {
+              appendTile(container, digit + match[4]);
+            }
+          } else if (match[5]) {
+            appendTile(container, match[5]);
+          } else if (match[6]) {
+            const spacer = document.createElement('span');
+            spacer.className = 'tile-spacer';
+            container.appendChild(spacer);
+          }
+        }
+      });
+    }
+
+    function appendTile(container, token) {
+      if (token === 'x') {
+        const tileBack = document.createElement('div');
+        tileBack.className = 'mahjong-tile back';
+        tileBack.title = 'Tertutup';
+        container.appendChild(tileBack);
+      } else if (TILE_SVG_MAP[token]) {
+        const tileFrame = document.createElement('div');
+        tileFrame.className = 'mahjong-tile';
+
+        const img = document.createElement('img');
+        img.src = SVG_MASTER + TILE_SVG_MAP[token];
+        img.alt = token;
+        img.loading = 'lazy';
+
+        tileFrame.appendChild(img);
+        container.appendChild(tileFrame);
+      }
+    }
+
+    renderMahjongTiles();
+
+    // ==========================================
+    // 2. HEADER SEARCH FUNCTIONALITY
+    // ==========================================
+    const toggleSearchBtn = document.getElementById('toggleSearchBtn');
+    const searchBarWrap = document.getElementById('searchBarWrap');
+    const searchInput = document.getElementById('searchInput');
+    const clearSearchBtn = document.getElementById('clearSearchBtn');
+    const searchStatus = document.getElementById('searchStatus');
+    const noResultsBox = document.getElementById('noResultsBox');
+    const allSections = Array.from(document.querySelectorAll('.section-block'));
+    const allCards = Array.from(document.querySelectorAll('.rule-card'));
+
+    // Simpan HTML asli tiap teks agar highlight dapat dibersihkan dengan aman
+    const searchableTargets = [];
+    allCards.forEach((card) => {
+      card.querySelectorAll('.rule-name, .rule-en, .rule-cn, .rule-desc, .penalty-effect').forEach((el) => {
+        searchableTargets.push({ el, originalHTML: el.innerHTML });
+      });
+    });
+
+    function escapeRegExp(str) {
+      return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    function highlightTextNodes(element, regex) {
+      const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null);
+      const textNodes = [];
+      let node;
+      while ((node = walker.nextNode())) {
+        if (node.nodeValue.trim() !== '') {
+          textNodes.push(node);
+        }
+      }
+
+      textNodes.forEach((textNode) => {
+        const text = textNode.nodeValue;
+        if (!regex.test(text)) return;
+        regex.lastIndex = 0;
+
+        const frag = document.createDocumentFragment();
+        let lastIndex = 0;
+        let match;
+        while ((match = regex.exec(text)) !== null) {
+          if (match.index > lastIndex) {
+            frag.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
+          }
+          const mark = document.createElement('mark');
+          mark.className = 'search-hl';
+          mark.textContent = match[0];
+          frag.appendChild(mark);
+          lastIndex = match.index + match[0].length;
+        }
+        if (lastIndex < text.length) {
+          frag.appendChild(document.createTextNode(text.slice(lastIndex)));
+        }
+        textNode.parentNode.replaceChild(frag, textNode);
+      });
+    }
+
+    function filterRules(rawQuery) {
+      const query = rawQuery.trim();
+      clearSearchBtn.classList.toggle('visible', query.length > 0);
+
+      // Kembalikan teks asli sebelum filter ulang
+      searchableTargets.forEach((item) => {
+        item.el.innerHTML = item.originalHTML;
+      });
+
+      if (!query) {
+        allCards.forEach((card) => (card.style.display = ''));
+        allSections.forEach((sec) => (sec.style.display = ''));
+        searchStatus.classList.remove('visible');
+        noResultsBox.classList.remove('visible');
+        updateActiveNavOnScroll();
+        return;
+      }
+
+      const lowerQuery = query.toLowerCase();
+      const highlightRegex = new RegExp(`(${escapeRegExp(query)})`, 'gi');
+      let matchCount = 0;
+
+      allCards.forEach((card) => {
+        const textContent = card.textContent.toLowerCase();
+        const isMatch = textContent.includes(lowerQuery);
+        card.style.display = isMatch ? '' : 'none';
+
+        if (isMatch) {
+          matchCount++;
+          card.querySelectorAll('.rule-name, .rule-en, .rule-cn, .rule-desc, .penalty-effect').forEach((el) => {
+            highlightTextNodes(el, highlightRegex);
+          });
+        }
+      });
+
+      allSections.forEach((sec) => {
+        const visibleCard = sec.querySelector('.rule-card:not([style*="display: none"])');
+        sec.style.display = visibleCard ? '' : 'none';
+      });
+
+      searchStatus.textContent = `Ditemukan ${matchCount} aturan untuk "${query}"`;
+      searchStatus.classList.add('visible');
+      noResultsBox.classList.toggle('visible', matchCount === 0);
+      updateActiveNavOnScroll();
+    }
+
+    toggleSearchBtn.addEventListener('click', () => {
+      const isOpen = searchBarWrap.classList.toggle('open');
+      toggleSearchBtn.classList.toggle('active', isOpen);
+      if (isOpen) {
+        searchInput.focus();
+      } else {
+        searchInput.value = '';
+        filterRules('');
+      }
+    });
+
+    searchInput.addEventListener('input', (e) => {
+      filterRules(e.target.value);
+    });
+
+    clearSearchBtn.addEventListener('click', () => {
+      searchInput.value = '';
+      filterRules('');
+      searchInput.focus();
+    });
+
+    // ==========================================
+    // 3. AUTO-SYNC NAV PILL SCROLL SPY
+    // ==========================================
+    const navPillsContainer = document.getElementById('navPills');
+    const navPills = Array.from(document.querySelectorAll('.nav-pill'));
+    const topHeader = document.getElementById('topHeader');
+    let currentActiveId = 'cara-menang';
+    let isClickScrolling = false;
+    let clickScrollTimer = null;
+
+    function activateNavPill(sectionId) {
+      if (!sectionId || currentActiveId === sectionId) return;
+      currentActiveId = sectionId;
+
+      navPills.forEach((pill) => {
+        const targetId = pill.getAttribute('href').replace('#', '');
+        const isTarget = targetId === sectionId;
+        pill.classList.toggle('active', isTarget);
+
+        if (isTarget) {
+          // Geser nav-pills agar pill aktif selalu terlihat rapi di tengah
+          const containerRect = navPillsContainer.getBoundingClientRect();
+          const pillRect = pill.getBoundingClientRect();
+          const offset =
+            pillRect.left -
+            containerRect.left -
+            containerRect.width / 2 +
+            pillRect.width / 2;
+
+          navPillsContainer.scrollBy({
+            left: offset,
+            behavior: 'smooth'
+          });
+        }
+      });
+    }
+
+    function updateActiveNavOnScroll() {
+      if (isClickScrolling) return;
+
+      const visibleSections = allSections.filter((sec) => sec.style.display !== 'none');
+      if (visibleSections.length === 0) return;
+
+      const headerOffset = topHeader.offsetHeight + 28;
+      let activeSection = visibleSections[0];
+
+      // Jika sudah mentok di paling bawah halaman, aktifkan kategori terakhir
+      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 24) {
+        activeSection = visibleSections[visibleSections.length - 1];
+      } else {
+        for (const sec of visibleSections) {
+          const rect = sec.getBoundingClientRect();
+          if (rect.top <= headerOffset) {
+            activeSection = sec;
+          } else {
+            break;
+          }
+        }
+      }
+
+      activateNavPill(activeSection.id);
+    }
+
+    navPills.forEach((pill) => {
+      pill.addEventListener('click', () => {
+        const targetId = pill.getAttribute('href').replace('#', '');
+        isClickScrolling = true;
+        activateNavPill(targetId);
+
+        clearTimeout(clickScrollTimer);
+        clickScrollTimer = setTimeout(() => {
+          isClickScrolling = false;
+        }, 700);
+      });
+    });
+
+    window.addEventListener('scroll', updateActiveNavOnScroll, { passive: true });
+    window.addEventListener('resize', updateActiveNavOnScroll, { passive: true });
+
+    // ==========================================
+    // 4. PERSISTENT FONT SIZE SETTINGS (±1px)
+    // ==========================================
+    const FONT_STORAGE_KEY = 'ydsp_font_delta_px';
+    const MIN_FONT_DELTA = -2; // Minimal 11px pada rule-desc
+    const MAX_FONT_DELTA = 6;  // Maksimal 19px pada rule-desc
+    const BASE_DESC_SIZE = 13;
+
+    const openFontModalBtn = document.getElementById('openFontModalBtn');
+    const closeFontBtn = document.getElementById('closeFontBtn');
+    const fontModal = document.getElementById('fontModal');
+    const decreaseFontBtn = document.getElementById('decreaseFontBtn');
+    const resetFontBtn = document.getElementById('resetFontBtn');
+    const increaseFontBtn = document.getElementById('increaseFontBtn');
+    const fontSizeIndicator = document.getElementById('fontSizeIndicator');
+
+    let currentFontDelta = 0;
+
+    function loadSavedFontDelta() {
+      const saved = parseInt(localStorage.getItem(FONT_STORAGE_KEY), 10);
+      if (!isNaN(saved)) {
+        currentFontDelta = Math.min(MAX_FONT_DELTA, Math.max(MIN_FONT_DELTA, saved));
+      }
+      applyFontDelta(currentFontDelta, false);
+    }
+
+    function applyFontDelta(delta, save = true) {
+      currentFontDelta = Math.min(MAX_FONT_DELTA, Math.max(MIN_FONT_DELTA, delta));
+      document.documentElement.style.setProperty('--font-delta', `${currentFontDelta}px`);
+
+      const activeSize = BASE_DESC_SIZE + currentFontDelta;
+      const diffLabel =
+        currentFontDelta === 0
+          ? 'Standar'
+          : currentFontDelta > 0
+          ? `+${currentFontDelta}px`
+          : `${currentFontDelta}px`;
+
+      fontSizeIndicator.textContent = `Ukuran Deskripsi: ${activeSize}px (${diffLabel})`;
+
+      decreaseFontBtn.disabled = currentFontDelta <= MIN_FONT_DELTA;
+      increaseFontBtn.disabled = currentFontDelta >= MAX_FONT_DELTA;
+      resetFontBtn.disabled = currentFontDelta === 0;
+
+      if (save) {
+        localStorage.setItem(FONT_STORAGE_KEY, String(currentFontDelta));
+      }
+    }
+
+    decreaseFontBtn.addEventListener('click', () => {
+      applyFontDelta(currentFontDelta - 1);
+    });
+
+    increaseFontBtn.addEventListener('click', () => {
+      applyFontDelta(currentFontDelta + 1);
+    });
+
+    resetFontBtn.addEventListener('click', () => {
+      applyFontDelta(0);
+    });
+
+    openFontModalBtn.addEventListener('click', () => {
+      fontModal.classList.add('open');
+    });
+
+    closeFontBtn.addEventListener('click', () => {
+      fontModal.classList.remove('open');
+    });
+
+    fontModal.addEventListener('click', (e) => {
+      if (e.target === fontModal) {
+        fontModal.classList.remove('open');
+      }
+    });
+
+    loadSavedFontDelta();
+
+    // ==========================================
+    // 5. QRIS MODAL HANDLER
+    // ==========================================
+    const openQrisBtn = document.getElementById('openQrisBtn');
+    const closeQrisBtn = document.getElementById('closeQrisBtn');
+    const qrisModal = document.getElementById('qrisModal');
+
+    openQrisBtn.addEventListener('click', () => {
+      qrisModal.classList.add('open');
+    });
+
+    closeQrisBtn.addEventListener('click', () => {
+      qrisModal.classList.remove('open');
+    });
+
+    qrisModal.addEventListener('click', (e) => {
+      if (e.target === qrisModal) {
+        qrisModal.classList.remove('open');
+      }
+    });
+  </script>
+</body>
+</html>
