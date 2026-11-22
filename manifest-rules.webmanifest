@@ -1,0 +1,15 @@
+{
+  "id": "/rules",
+  "name": "Aturan Main Mahjong",
+  "short_name": "Rules Mahjong",
+  "start_url": "/rules",
+  "scope": "/",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "/icons/icon-512-rules.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
