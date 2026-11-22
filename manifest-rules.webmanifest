@@ -10,13 +10,13 @@
   "theme_color": "#08403C",
   "icons": [
     {
-      "src": "/skor-mahjong/icon-192-rules.png",
+      "src": "/icon-192-rules.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/skor-mahjong/icon-512-rules.png",
+      "src": "/icon-512-rules.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
