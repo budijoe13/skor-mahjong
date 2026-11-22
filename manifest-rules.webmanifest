@@ -1,15 +1,25 @@
 {
   "id": "/rules",
-  "name": "Aturan Main Mahjong",
-  "short_name": "Rules Mahjong",
-  "start_url": "/rules",
+  "name": "YDSP Rules",
+  "short_name": "YDSP Rules",
+  "start_url": "https://www.skormahjong.com/rules",
   "scope": "/",
   "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F9F5F1",
+  "theme_color": "#08403C",
   "icons": [
     {
-      "src": "/icons/icon-512-rules.png",
+      "src": "/skor-mahjong/icon-192-rules.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/skor-mahjong/icon-512-rules.png",
       "sizes": "512x512",
-      "type": "image/png"
-    }
+      "type": "image/png",
+      "purpose": "any"
+    },
   ]
 }
