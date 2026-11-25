@@ -1,6 +1,6 @@
 const GHPATH = '/skor-mahjong';
 const APP_PREFIX = 'skormj_';
-const VERSION = 'version_03';
+const VERSION = 'version_04';
 const CACHE_NAME = APP_PREFIX + VERSION;
 
 const SVG_MASTER = 'https://raw.githubusercontent.com/budijoe/skor-mahjong/main';
