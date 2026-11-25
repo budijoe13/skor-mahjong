@@ -1806,9 +1806,6 @@
         }
 
         async function createOnlineRoom() {
-			if (typeof gtag === 'function') {
-    			gtag('event', 'buat_room_online', { mode: 'online_host' });
-			}
             triggerHaptic(40);
             if (!window.fbRoomService) {
                 showToast('Layanan Firebase sedang dimuat, coba sesaat lagi.');
@@ -3201,9 +3198,6 @@
         }
 
         function calculateScore() {
-			if (typeof gtag === 'function') {
-			    gtag('event', 'hitung_kalkulator_ydsp', { total_nilai: evaluation.totalScore });
-			}
             let totalScore = 0;
             let items = [];
 
@@ -3702,9 +3696,6 @@
         }
 
         function showFinalScreen(celebrate = true) {
-			if (typeof gtag === 'function') {
- 			   gtag('event', 'permainan_selesai', { total_ronde: currentRound });
-			}
             if (championTallyTimer) {
                 clearTimeout(championTallyTimer);
                 championTallyTimer = null;
