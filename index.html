@@ -4,15 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Skor Mahjong — Sistem Bandung YDSP</title>
-	<!-- Google tag (gtag.js) -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=G-L60NDEK4M8"></script>
-	<script>
-  		window.dataLayer = window.dataLayer || [];
-  		function gtag(){dataLayer.push(arguments);}
-  		gtag('js', new Date());
-
-  		gtag('config', 'G-L60NDEK4M8');
-	</script>
     <meta name="description" content="Pencatat skor dan kalkulator tay Mahjong Sistem Bandung YDSP untuk smartphone dengan sinkronisasi TV real-time.">
     
     <!-- Home screen & browser icons -->
@@ -22,10 +13,10 @@
 	<link rel="shortcut icon" href="/favicon.ico" />
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Skor Mahjong">
-    <meta name="theme-color" content="#08403C">
-    <link rel="canonical" href="https://budijoe13.github.io/skor-mahjong/" />
+    <meta name="theme-color" content="#082424">
+    <link rel="canonical" href="https://budijoe.github.io/skor-mahjong/" />
     <link rel="manifest" href="/skor-mahjong/manifest.webmanifest">
 
     <!-- Google Fonts: Inter -->
@@ -43,13 +34,19 @@
             theme: {
                 extend: {
                     colors: {
-                        mjbg: '#F9F5F1',
-                        mjtext: '#08403C',
-                        mjgreen: '#08403C',
-                        mjaccent: '#0e6920',
-                        mjlight: '#e2efe4',
-                        mjdanger: '#c53030',
-                        mjgold: '#d69e2e'
+                        mjbg: '#0A2626',
+                        mjcard: '#164545',
+                        mjwell: '#0B2727',
+                        mjheader: '#082424',
+                        mjtext: '#F1F7F6',
+                        mjmuted: '#9FC2BE',
+                        mjgreen: '#167A56',
+                        mjtitle: '#B5FFEB',
+                        mjaccent: '#1E966B',
+                        mjlight: '#1C574D',
+                        mjdanger: '#F87171',
+                        mjdangerbtn: '#DC2626',
+                        mjgold: '#F59E0B'
                     },
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
@@ -60,8 +57,8 @@
     </script>
     <style>
         body {
-            background-color: #F9F5F1;
-            color: #08403C;
+            background-color: #0F3333;
+            color: #F1F7F6;
             -webkit-tap-highlight-color: transparent;
         }
         /* TV Remote D-Pad & Keyboard Focus Indicator */
@@ -69,15 +66,15 @@
         a:focus-visible,
         input:focus-visible,
         [tabindex]:focus-visible {
-            outline: 3px solid #d69e2e !important;
+            outline: 3px solid #F59E0B !important;
             outline-offset: 2px !important;
-            box-shadow: 0 0 0 5px rgba(214, 158, 46, 0.25) !important;
+            box-shadow: 0 0 0 5px rgba(245, 158, 11, 0.3) !important;
         }
         .btn-shadow {
-            box-shadow: 0 4px 6px -1px rgba(7, 69, 19, 0.2), 0 2px 4px -1px rgba(7, 69, 19, 0.1);
+            box-shadow: 0 4px 10px -1px rgba(0, 0, 0, 0.35), 0 2px 4px -1px rgba(0, 0, 0, 0.25);
         }
         .btn-shadow:active {
-            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.2);
+            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.35);
             transform: translateY(1px);
         }
         img {
@@ -89,17 +86,18 @@
             height: 6px;
         }
         ::-webkit-scrollbar-track {
-            background: #F9F5F1;
+            background: #0B2727;
         }
         ::-webkit-scrollbar-thumb {
-            background: #a3c9a8;
+            background: #2B6B68;
             border-radius: 4px;
         }
 
-        /* Scorer specific tile styling */
+        /* Scorer specific tile styling (ivory tile faces kept crisp on dark table) */
         .tile-card {
-            background: white;
-            border: 2px solid #cbd5e0;
+            background: #F8FAFC;
+            color: #0F3333;
+            border: 2px solid #2D6666;
             border-radius: 10px;
             padding: 5px 2px;
             display: flex;
@@ -110,9 +108,9 @@
             transition: all 0.15s;
         }
         .tile-card.selected {
-            border-color: #c53030;
-            background-color: #fff5f5;
-            box-shadow: 0 0 0 2px #c53030;
+            border-color: #F87171;
+            background-color: #FEE2E2;
+            box-shadow: 0 0 0 2px #F87171;
         }
         .tile-card img {
             width: 32px;
@@ -123,23 +121,28 @@
         .tile-slot {
             width: 30px;
             height: 40px;
-            border: 1.5px dashed #cbd5e0;
+            border: 1.5px dashed #3B7A7A;
             border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            background: #fafafa;
+            background: #0B2727;
+            color: #8FB8B4;
+            font-weight: 700;
         }
         .tile-slot.filled {
             border-style: solid;
-            border-color: #a0aec0;
-            background: white;
+            border-color: #94A3B8;
+            background: #FFFFFF;
         }
         .tile-slot.selected {
-            border-color: #c53030;
-            box-shadow: 0 0 0 2px #c53030;
-            background-color: #fff5f5;
+            border-color: #F87171;
+            box-shadow: 0 0 0 2px #F87171;
+            background-color: #2A2429;
+        }
+        .tile-slot.filled.selected {
+            background-color: #FEE2E2;
         }
         .tile-slot img {
             width: 24px;
@@ -151,8 +154,8 @@
             display: grid;
             grid-template-columns: repeat(9, 1fr);
             gap: 3px;
-            background: white;
-            border: 1.5px solid #cbd5e0;
+            background: #0B2727;
+            border: 1.5px solid #2A6363;
             border-radius: 12px;
             padding: 5px;
         }
@@ -161,10 +164,10 @@
             align-items: center;
             justify-content: center;
             padding: 2px 1px;
-            border: 1px solid #e2e8f0;
+            border: 1px solid #CBD5E1;
             border-radius: 6px;
             cursor: pointer;
-            background: #ffffff;
+            background: #FFFFFF;
             height: 38px;
             transition: transform 0.1s;
         }
@@ -173,8 +176,8 @@
         }
         .picker-item.span-2 {
             grid-column: span 2;
-            background: #fffdf5;
-            border-color: #d69d2e;
+            background: #FEF3C7;
+            border-color: #F59E0B;
         }
         .picker-item img {
             width: 100%;
@@ -192,28 +195,28 @@
             transition: all 0.15s;
         }
         .open-toggle.closed {
-            background-color: #f0fff4;
-            color: #276749;
-            border: 1.5px solid #9ae6b4;
+            background-color: #134E4A;
+            color: #6EE7B7;
+            border: 1.5px solid #34D399;
         }
         .open-toggle.open {
-            background-color: #ebf8ff;
-            color: #2b6cb0;
-            border: 1.5px solid #90cdf4;
+            background-color: #1E3A5F;
+            color: #93C5FD;
+            border: 1.5px solid #60A5FA;
         }
 
         .visual-tile-img {
             width: 24px;
             height: 34px;
             object-fit: contain;
-            background: white;
-            border: 1px solid #cbd5e0;
+            background: #FFFFFF;
+            border: 1px solid #CBD5E1;
             border-radius: 4px;
             padding: 1px;
         }
         .visual-tile-img.kim-highlight {
-            border: 2px solid #c53030;
-            box-shadow: 0 0 5px rgba(197, 48, 48, 0.5);
+            border: 2px solid #F87171;
+            box-shadow: 0 0 6px rgba(248, 113, 113, 0.75);
         }
 
         /* Confetti Overlay Canvas */
@@ -278,8 +281,8 @@
         .champion-card {
             position: relative;
             overflow: hidden;
-            background: linear-gradient(135deg, #fffdf7 0%, #fff8e1 55%, #ffffff 100%);
-            box-shadow: 0 8px 20px -4px rgba(214, 157, 46, 0.32), 0 0 0 1px rgba(214, 157, 46, 0.25);
+            background: linear-gradient(135deg, #1E544C 0%, #2B533C 55%, #164545 100%);
+            box-shadow: 0 8px 22px -4px rgba(245, 158, 11, 0.35), 0 0 0 1px rgba(245, 158, 11, 0.45);
         }
         .champion-shimmer::after {
             content: '';
@@ -309,11 +312,11 @@
     <canvas id="confettiCanvas"></canvas>
 
     <!-- Header App -->
-    <header class="w-full bg-mjgreen text-white shadow-md py-3.5 px-4 sticky top-0 z-30 shrink-0">
+    <header class="w-full bg-mjheader text-white border-b border-emerald-400/15 shadow-md py-3.5 px-4 sticky top-0 z-30 shrink-0">
         <div class="max-w-lg mx-auto flex items-center justify-between gap-2">
             <div class="flex items-center space-x-2.5 min-w-0">
-                <div class="w-8 h-10 bg-white rounded-lg shadow-sm flex items-center justify-center shrink-0 border-b-2 border-emerald-200">
-                    <img src="https://raw.githubusercontent.com/budijoe13/skor-mahjong/main/svg/44-joker-clown.svg" 
+                <div class="w-8 h-10 bg-white/95 rounded-lg shadow-sm flex items-center justify-center shrink-0 border-b-2 border-emerald-200">
+                    <img src="https://raw.githubusercontent.com/budijoe/skor-mahjong/main/svg/44-joker-clown.svg" 
                          alt="發" 
                          class="w-full h-full object-contain select-none">
                 </div>
@@ -342,46 +345,46 @@
         <!-- SCREEN 1: SETUP NAMA PEMAIN & MODE ROOM    -->
         <!-- ========================================== -->
         <section id="screen-setup" class="space-y-4">
-            <div class="bg-white rounded-3xl p-5 shadow-sm border border-mjgreen/10 space-y-4">
+            <div class="bg-mjcard rounded-3xl p-5 shadow-sm border border-emerald-400/15 space-y-4">
                 <div class="text-center space-y-1">
-                    <h2 class="text-xl font-black text-mjgreen">Masukkan Nama Pemain</h2>
-                    <p class="text-xs text-mjtext/70">Isi nama 4 pemain yang akan bertanding</p>
+                    <h2 class="text-xl font-black text-mjtitle">Masukkan Nama Pemain</h2>
+                    <p class="text-xs text-mjmuted">Isi nama 4 pemain yang akan bertanding</p>
                 </div>
 
                 <form id="setup-form" class="space-y-3.5" onsubmit="startGame(event)">
                     <div>
-                        <label class="block text-xs font-bold mb-1 text-mjgreen">Pemain 1 — Timur (Bandar Awal)</label>
+                        <label class="block text-xs font-bold mb-1 text-mjtitle">Pemain 1 — Timur (Bandar Awal)</label>
                         <div class="relative">
-                            <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-lg text-mjgreen">👤 東</span>
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-lg text-mjtitle">👤 東</span>
                             <input type="text" id="p1-input" required placeholder="Contoh: Budi" value="Budi"
-                                class="w-full pl-16 pr-3.5 py-2.5 rounded-xl border border-mjgreen/25 focus:border-mjgreen focus:ring-2 focus:ring-mjgreen/20 outline-none text-mjtext font-bold text-base transition bg-mjbg/30">
+                                class="w-full pl-16 pr-3.5 py-2.5 rounded-xl border border-emerald-400/30 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/25 outline-none text-mjtext font-bold text-base transition bg-mjbg/30">
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold mb-1 text-mjgreen">Pemain 2 — Selatan</label>
+                        <label class="block text-xs font-bold mb-1 text-mjtitle">Pemain 2 — Selatan</label>
                         <div class="relative">
-                            <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-lg text-mjgreen">👤 南</span>
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-lg text-mjtitle">👤 南</span>
                             <input type="text" id="p2-input" required placeholder="Contoh: Joseph" value="Joseph"
-                                class="w-full pl-16 pr-3.5 py-2.5 rounded-xl border border-mjgreen/25 focus:border-mjgreen focus:ring-2 focus:ring-mjgreen/20 outline-none text-mjtext font-bold text-base transition bg-mjbg/30">
+                                class="w-full pl-16 pr-3.5 py-2.5 rounded-xl border border-emerald-400/30 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/25 outline-none text-mjtext font-bold text-base transition bg-mjbg/30">
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold mb-1 text-mjgreen">Pemain 3 — Barat</label>
+                        <label class="block text-xs font-bold mb-1 text-mjtitle">Pemain 3 — Barat</label>
                         <div class="relative">
-                            <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-lg text-mjgreen">👤 西</span>
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-lg text-mjtitle">👤 西</span>
                             <input type="text" id="p3-input" required placeholder="Contoh: Hansen" value="Hansen"
-                                class="w-full pl-16 pr-3.5 py-2.5 rounded-xl border border-mjgreen/25 focus:border-mjgreen focus:ring-2 focus:ring-mjgreen/20 outline-none text-mjtext font-bold text-base transition bg-mjbg/30">
+                                class="w-full pl-16 pr-3.5 py-2.5 rounded-xl border border-emerald-400/30 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/25 outline-none text-mjtext font-bold text-base transition bg-mjbg/30">
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold mb-1 text-mjgreen">Pemain 4 — Utara</label>
+                        <label class="block text-xs font-bold mb-1 text-mjtitle">Pemain 4 — Utara</label>
                         <div class="relative">
-                            <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-lg text-mjgreen">👤 北</span>
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-lg text-mjtitle">👤 北</span>
                             <input type="text" id="p4-input" required placeholder="Contoh: Ramses" value="Ramses"
-                                class="w-full pl-16 pr-3.5 py-2.5 rounded-xl border border-mjgreen/25 focus:border-mjgreen focus:ring-2 focus:ring-mjgreen/20 outline-none text-mjtext font-bold text-base transition bg-mjbg/30">
+                                class="w-full pl-16 pr-3.5 py-2.5 rounded-xl border border-emerald-400/30 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/25 outline-none text-mjtext font-bold text-base transition bg-mjbg/30">
                         </div>
                     </div>
 
@@ -393,18 +396,18 @@
 
                         <!-- Pembatas Mode Online -->
                         <div class="relative flex py-1 items-center">
-                            <div class="flex-grow border-t border-mjgreen/15"></div>
-                            <span class="flex-shrink mx-3 text-[10px] font-extrabold uppercase tracking-wider text-mjgreen/60">atau Mode Online (Sinkron TV)</span>
-                            <div class="flex-grow border-t border-mjgreen/15"></div>
+                            <div class="flex-grow border-t border-emerald-400/20"></div>
+                            <span class="flex-shrink mx-3 text-[10px] font-extrabold uppercase tracking-wider text-mjmuted">atau Mode Online (Sinkron TV)</span>
+                            <div class="flex-grow border-t border-emerald-400/20"></div>
                         </div>
 
                         <div class="grid grid-cols-2 gap-2.5">
-                            <button type="button" id="btn-create-room" onclick="createOnlineRoom()" class="w-full bg-mjlight hover:bg-emerald-100 text-mjgreen border-2 border-mjgreen font-extrabold py-3 px-3 rounded-xl shadow-sm transition duration-200 flex items-center justify-center space-x-1.5 text-xs sm:text-sm">
+                            <button type="button" id="btn-create-room" onclick="createOnlineRoom()" class="w-full bg-mjlight hover:bg-[#236B5F] text-mjtitle border-2 border-emerald-400 font-extrabold py-3 px-3 rounded-xl shadow-sm transition duration-200 flex items-center justify-center space-x-1.5 text-xs sm:text-sm">
                                 <i class="fa-solid fa-tower-broadcast"></i>
                                 <span>Buat Room</span>
                             </button>
 
-                            <button type="button" onclick="openJoinRoomModal()" class="w-full bg-mjgold hover:bg-amber-600 text-white font-extrabold py-3 px-3 rounded-xl btn-shadow transition duration-200 flex items-center justify-center space-x-1.5 text-xs sm:text-sm">
+                            <button type="button" onclick="openJoinRoomModal()" class="w-full bg-mjgold hover:bg-amber-400 text-[#082424] font-extrabold py-3 px-3 rounded-xl btn-shadow transition duration-200 flex items-center justify-center space-x-1.5 text-xs sm:text-sm">
                                 <i class="fa-solid fa-right-to-bracket"></i>
                                 <span>Gabung Room</span>
                             </button>
@@ -413,7 +416,7 @@
                 </form>
             </div>
 
-            <a href="https://skormahjong.com/rules" target="_blank" rel="noopener noreferrer" class="w-full bg-white hover:bg-mjlight text-mjgreen border border-mjgreen/30 font-extrabold py-3.5 px-4 rounded-2xl shadow-sm transition duration-200 flex items-center justify-center space-x-2 text-xs tracking-wide">
+            <a href="https://skormahjong.com/rules" target="_blank" rel="noopener noreferrer" class="w-full bg-mjcard hover:bg-mjlight text-mjtitle border border-emerald-400/35 font-extrabold py-3.5 px-4 rounded-2xl shadow-sm transition duration-200 flex items-center justify-center space-x-2 text-xs tracking-wide">
                 <i class="fa-solid fa-book-open"></i>
                 <span>ATURAN MAHJONG BANDUNG YDSP</span>
                 <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
@@ -427,17 +430,17 @@
             
             <!-- Info Bar: Angin Meja, Bandar Saat Ini & Ronde -->
             <div class="grid grid-cols-2 gap-2.5">
-                <div class="bg-white rounded-2xl px-3.5 py-2.5 shadow-sm border border-mjgreen/15 flex items-center justify-between">
+                <div class="bg-mjcard rounded-2xl px-3.5 py-2.5 shadow-sm border border-emerald-400/20 flex items-center justify-between">
                     <div>
-                        <span class="block text-[9px] font-extrabold uppercase tracking-wider text-mjgreen/60">Angin Meja</span>
-                        <span id="round-wind-name" class="text-sm font-black text-mjgreen uppercase">Timur</span>
+                        <span class="block text-[9px] font-extrabold uppercase tracking-wider text-mjmuted">Angin Meja</span>
+                        <span id="round-wind-name" class="text-sm font-black text-mjtitle uppercase">Timur</span>
                     </div>
-                    <span id="round-wind-char" class="text-2xl font-black text-mjgreen leading-none bg-mjbg px-2.5 py-1.5 rounded-xl border border-mjgreen/10">東</span>
+                    <span id="round-wind-char" class="text-2xl font-black text-mjtitle leading-none bg-mjbg px-2.5 py-1.5 rounded-xl border border-emerald-400/15">東</span>
                 </div>
 
-                <div class="bg-white rounded-2xl px-3.5 py-2.5 shadow-sm border border-mjgreen/15 flex items-center justify-between">
+                <div class="bg-mjcard rounded-2xl px-3.5 py-2.5 shadow-sm border border-emerald-400/20 flex items-center justify-between">
                     <div class="min-w-0 pr-1">
-                        <span class="block text-[9px] font-extrabold uppercase tracking-wider text-green/60">Bandar (東)</span>
+                        <span class="block text-[9px] font-extrabold uppercase tracking-wider text-mjmuted">Bandar (東)</span>
                         <span id="current-dealer-name" class="block text-sm font-black text-mjdanger truncate">Budi</span>
                     </div>
                     <div class="bg-mjgreen text-white px-2.5 py-1 rounded-xl text-center leading-tight shrink-0 shadow-sm">
@@ -460,24 +463,24 @@
                 </button>
 
                 <div class="grid grid-cols-2 gap-2.5">
-                    <button onclick="recordDraw()" class="bg-white hover:bg-mjlight text-mjgreen font-extrabold py-3 px-3 rounded-xl shadow-sm transition duration-200 flex items-center justify-center space-x-1.5 text-xs tracking-wide border border-mjgreen/35">
+                    <button onclick="recordDraw()" class="bg-mjcard hover:bg-mjlight text-mjtitle font-extrabold py-3 px-3 rounded-xl shadow-sm transition duration-200 flex items-center justify-center space-x-1.5 text-xs tracking-wide border border-emerald-400/40">
                         <i class="fa-solid fa-handshake"></i>
                         <span>IMBANG</span>
                     </button>
 
-                    <button onclick="openPenaltyModal()" class="bg-white hover:bg-red-50 text-mjdanger font-extrabold py-3 px-3 rounded-xl shadow-sm transition duration-200 flex items-center justify-center space-x-1.5 text-xs tracking-wide border border-mjdanger/35">
+                    <button onclick="openPenaltyModal()" class="bg-mjcard hover:bg-red-950/60 text-mjdanger font-extrabold py-3 px-3 rounded-xl shadow-sm transition duration-200 flex items-center justify-center space-x-1.5 text-xs tracking-wide border border-red-400/45">
                         <i class="fa-solid fa-triangle-exclamation"></i>
                         <span>PENALTI</span>
                     </button>
                 </div>
 
                 <div class="grid grid-cols-3 gap-2.5">
-                    <button onclick="openFinishModal()" class="col-span-2 bg-mjgold hover:bg-amber-600 text-white font-extrabold py-3 px-4 rounded-xl btn-shadow transition duration-200 flex items-center justify-center space-x-1.5 text-xs tracking-wide">
+                    <button onclick="openFinishModal()" class="col-span-2 bg-mjgold hover:bg-amber-400 text-[#082424] font-extrabold py-3 px-4 rounded-xl btn-shadow transition duration-200 flex items-center justify-center space-x-1.5 text-xs tracking-wide">
                         <i class="fa-solid fa-flag-checkered"></i>
                         <span>PERMAINAN SELESAI</span>
                     </button>
 
-                    <button onclick="openResetModal()" class="bg-white hover:bg-red-50 text-mjdanger/80 hover:text-mjdanger font-bold py-3 px-3 rounded-xl border border-mjdanger/25 transition duration-200 flex items-center justify-center space-x-1 text-xs">
+                    <button onclick="openResetModal()" class="bg-mjcard hover:bg-red-950/60 text-mjdanger hover:text-mjdanger font-bold py-3 px-3 rounded-xl border border-red-400/35 transition duration-200 flex items-center justify-center space-x-1 text-xs">
                         <i class="fa-solid fa-rotate-right"></i>
                         <span>Reset</span>
                     </button>
@@ -485,18 +488,18 @@
             </div>
 
             <!-- VIEWER / NON-HOST BANNER -->
-            <div id="viewer-mode-banner" class="hidden bg-white rounded-2xl p-4 border-2 border-mjgreen/20 shadow-sm space-y-3 text-center">
-                <div class="flex items-center justify-center space-x-2 text-mjgreen font-bold text-xs">
+            <div id="viewer-mode-banner" class="hidden bg-mjcard rounded-2xl p-4 border-2 border-emerald-400/25 shadow-sm space-y-3 text-center">
+                <div class="flex items-center justify-center space-x-2 text-mjtitle font-bold text-xs">
                     <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
                     <span>Terhubung ke Room <span id="viewer-room-code-label" class="font-mono font-black">000000</span> (Mode Pantau)</span>
                 </div>
-                <p class="text-[11px] text-gray-500">Skor diperbarui otomatis secara real-time saat Host mencatat ronde.</p>
+                <p class="text-[11px] text-mjmuted">Skor diperbarui otomatis secara real-time saat Host mencatat ronde.</p>
                 <div class="grid grid-cols-2 gap-2.5 pt-1">
-                    <button type="button" onclick="takeOverHost()" class="bg-mjlight hover:bg-emerald-100 text-mjgreen border border-mjgreen/40 font-bold py-2.5 px-3 rounded-xl text-xs transition flex items-center justify-center space-x-1.5">
+                    <button type="button" onclick="takeOverHost()" class="bg-mjlight hover:bg-[#236B5F] text-mjtitle border border-emerald-400/50 font-bold py-2.5 px-3 rounded-xl text-xs transition flex items-center justify-center space-x-1.5">
                         <i class="fa-solid fa-user-shield"></i>
                         <span>Ambil Alih Host</span>
                     </button>
-                    <button type="button" onclick="leaveOnlineRoom()" class="bg-gray-100 hover:bg-red-50 text-gray-700 hover:text-mjdanger font-bold py-2.5 px-3 rounded-xl text-xs transition flex items-center justify-center space-x-1.5">
+                    <button type="button" onclick="leaveOnlineRoom()" class="bg-mjwell hover:bg-red-950/60 text-mjtext hover:text-mjdanger font-bold py-2.5 px-3 rounded-xl text-xs transition flex items-center justify-center space-x-1.5">
                         <i class="fa-solid fa-right-from-bracket"></i>
                         <span>Keluar Room</span>
                     </button>
@@ -504,9 +507,9 @@
             </div>
 
             <!-- Riwayat Ronde -->
-            <div class="bg-white rounded-2xl p-4 shadow-sm border border-mjgreen/10 space-y-2.5">
+            <div class="bg-mjcard rounded-2xl p-4 shadow-sm border border-emerald-400/15 space-y-2.5">
                 <div class="flex items-center justify-between border-b border-mjbg pb-2">
-                    <h3 class="font-bold text-xs uppercase tracking-wider text-mjgreen flex items-center space-x-1.5">
+                    <h3 class="font-bold text-xs uppercase tracking-wider text-mjtitle flex items-center space-x-1.5">
                         <i class="fa-solid fa-clock-rotate-left"></i>
                         <span>Riwayat Ronde</span>
                     </h3>
@@ -517,7 +520,7 @@
                 </div>
                 
                 <div id="history-container" class="space-y-1.5 max-h-48 overflow-y-auto pr-1">
-                    <p class="text-xs text-center text-gray-400 py-3 italic">Belum ada skor yang dicatat.</p>
+                    <p class="text-xs text-center text-mjmuted/75 py-3 italic">Belum ada skor yang dicatat.</p>
                 </div>
             </div>
 
@@ -527,14 +530,14 @@
         <!-- SCREEN 3: SKOR MAHJONG HARI INI            -->
         <!-- ========================================== -->
 <section id="screen-final" class="hidden space-y-4">
-    <div id="final-capture" class="bg-mjbg rounded-3xl p-5 space-y-4 border border-mjgreen/15 shadow-sm">
+    <div id="final-capture" class="bg-mjbg rounded-3xl p-5 space-y-4 border border-emerald-400/20 shadow-sm">
         
         <!-- Pembungkus Utama: Menyusun Icon & Teks bersebelahan lalu memposisikan semuanya di tengah -->
         <div class="flex items-center justify-center gap-3.5 cursor-pointer select-none" onclick="replayFinalCelebration()" title="Ketuk untuk memutar ulang perayaan">
             
             <!-- Frame Icon Joker (Kiri) -->
-            <div class="w-[60px] h-20 bg-white rounded-xl shadow-sm flex items-center justify-center shrink-0 border-b-2 border-emerald-200 p-1">
-                <img src="https://raw.githubusercontent.com/budijoe13/skor-mahjong/main/svg/44-joker-clown.svg" 
+            <div class="w-[60px] h-20 bg-white/95 rounded-xl shadow-sm flex items-center justify-center shrink-0 border-b-2 border-emerald-200 p-1">
+                <img src="https://raw.githubusercontent.com/budijoe/skor-mahjong/main/svg/44-joker-clown.svg" 
                      alt="Joker" 
 		     crossorigin="anonymous"
                      class="w-full h-full object-contain select-none">
@@ -542,10 +545,10 @@
 
             <!-- Blok Informasi Teks (Kanan) -->
             <div class="text-left space-y-0.5">
-                <h2 class="text-lg sm:text-xl font-black tracking-wider uppercase text-mjgreen leading-tight">SKOR MAHJONG HARI INI</h2>
-                <p class="text-[11px] font-semibold text-mjgreen/60">Sistem Bandung YDSP</p>
-                <p class="text-xs font-bold text-mjgreen pt-1"><span id="final-date"></span> · Mulai <span id="final-start-time"></span></p>
-                <div class="flex items-center space-x-3 text-[11px] text-mjtext/70 font-medium">
+                <h2 class="text-lg sm:text-xl font-black tracking-wider uppercase text-mjtitle leading-tight">SKOR MAHJONG HARI INI</h2>
+                <p class="text-[11px] font-semibold text-mjmuted">Sistem Bandung YDSP</p>
+                <p class="text-xs font-bold text-mjtitle pt-1"><span id="final-date"></span> · Mulai <span id="final-start-time"></span></p>
+                <div class="flex items-center space-x-3 text-[11px] text-mjmuted font-medium">
                     <span><i class="fa-regular fa-clock mr-1"></i><span id="final-duration"></span></span>
                     <span><i class="fa-solid fa-layer-group mr-1"></i><span id="final-rounds"></span> Ronde</span>
                 </div>
@@ -557,7 +560,7 @@
             <!-- Dynamic ranking -->
         </div>
 
-        <div class="space-y-1 text-sm text-mjgreen border-t border-mjgreen/15 pt-3">
+        <div class="space-y-1 text-sm text-mjtitle border-t border-emerald-400/20 pt-3">
             <div><span class="font-medium">Tay Terbesar:</span> <span id="final-biggest-hand" class="font-bold"></span></div>
             <div><span class="font-medium">Poin Ronde Terbesar:</span> <span id="final-biggest-round" class="font-bold"></span></div>
         </div>
@@ -568,18 +571,18 @@
             <i class="fa-solid fa-share-nodes"></i>
             <span>BAGIKAN</span>
         </button>
-        <button onclick="saveFinal()" class="w-full bg-white hover:bg-mjlight text-mjgreen border-2 border-mjgreen font-extrabold py-3.5 rounded-2xl btn-shadow transition flex items-center justify-center space-x-2 text-xs tracking-wide">
+        <button onclick="saveFinal()" class="w-full bg-mjcard hover:bg-mjlight text-mjtitle border-2 border-emerald-400 font-extrabold py-3.5 rounded-2xl btn-shadow transition flex items-center justify-center space-x-2 text-xs tracking-wide">
             <i class="fa-solid fa-download"></i>
             <span>SIMPAN</span>
         </button>
     </div>
 
-    <button id="btn-final-new-game" onclick="openResetModal()" class="w-full bg-white hover:bg-red-50 text-mjdanger border border-mjdanger/30 hover:border-mjdanger font-bold py-3.5 rounded-2xl transition duration-200 flex items-center justify-center space-x-2 text-xs">
+    <button id="btn-final-new-game" onclick="openResetModal()" class="w-full bg-mjcard hover:bg-red-950/60 text-mjdanger border border-red-400/40 hover:border-mjdanger font-bold py-3.5 rounded-2xl transition duration-200 flex items-center justify-center space-x-2 text-xs">
         <i class="fa-solid fa-rotate-right"></i>
         <span>PERMAINAN BARU</span>
     </button>
 
-    <button id="btn-final-leave-room" onclick="leaveOnlineRoom()" class="hidden w-full bg-white hover:bg-red-50 text-gray-700 hover:text-mjdanger border border-gray-300 font-bold py-3.5 rounded-2xl transition duration-200 flex items-center justify-center space-x-2 text-xs">
+    <button id="btn-final-leave-room" onclick="leaveOnlineRoom()" class="hidden w-full bg-mjcard hover:bg-red-950/60 text-mjtext hover:text-mjdanger border border-emerald-400/25 font-bold py-3.5 rounded-2xl transition duration-200 flex items-center justify-center space-x-2 text-xs">
         <i class="fa-solid fa-right-from-bracket"></i>
         <span>KELUAR DARI ROOM</span>
     </button>
@@ -588,7 +591,7 @@
     </main>
 
     <!-- Footer -->
-    <footer class="w-full text-center italic text-[11px] py-3 px-4 shrink-0" style="color: #A59C91;">
+    <footer class="w-full text-center italic text-[11px] py-3 px-4 shrink-0" style="color: #86ABA7;">
         <span>budijoe©2026 · All rights reserved.</span>
     </footer>
 
@@ -596,27 +599,27 @@
     <!-- MODAL: GABUNG ROOM ONLINE (6 DIGIT)         -->
     <!-- ========================================== -->
     <div id="modal-join-room" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-mjgreen/20 text-center space-y-4">
-            <div class="w-12 h-12 bg-mjlight text-mjgreen rounded-full flex items-center justify-center mx-auto text-xl">
+        <div class="bg-mjcard rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-emerald-400/25 text-center space-y-4">
+            <div class="w-12 h-12 bg-mjlight text-mjtitle rounded-full flex items-center justify-center mx-auto text-xl">
                 <i class="fa-solid fa-satellite-dish"></i>
             </div>
             <div class="space-y-1">
-                <h3 class="font-black text-xl tracking-wider text-mjgreen uppercase">GABUNG ROOM ONLINE</h3>
-                <p class="text-xs text-gray-500">Masukkan 6 digit kode Room yang tampil di layar Host</p>
+                <h3 class="font-black text-xl tracking-wider text-mjtitle uppercase">GABUNG ROOM ONLINE</h3>
+                <p class="text-xs text-mjmuted">Masukkan 6 digit kode Room yang tampil di layar Host</p>
             </div>
 
             <div class="space-y-2">
                 <input type="text" id="join-room-input" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="000000"
                     oninput="this.value = this.value.replace(/[^0-9]/g, ''); hideJoinRoomError();"
                     onkeydown="if(event.key==='Enter') submitJoinRoom()"
-                    class="w-full text-center text-3xl font-black tracking-[0.25em] py-3.5 rounded-2xl border-2 border-mjgreen/40 focus:border-mjgreen focus:ring-4 focus:ring-mjgreen/20 outline-none bg-mjbg text-mjgreen font-mono">
+                    class="w-full text-center text-3xl font-black tracking-[0.25em] py-3.5 rounded-2xl border-2 border-emerald-400/50 focus:border-emerald-400 focus:ring-4 focus:ring-emerald-400/25 outline-none bg-mjbg text-mjtitle font-mono">
                 <p id="join-room-error" class="hidden text-xs font-semibold text-mjdanger">
                     <i class="fa-solid fa-circle-exclamation mr-1"></i><span></span>
                 </p>
             </div>
 
             <div class="grid grid-cols-2 gap-3 pt-2">
-                <button type="button" onclick="closeJoinRoomModal()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 rounded-xl text-sm transition">
+                <button type="button" onclick="closeJoinRoomModal()" class="w-full bg-mjwell hover:bg-[#1D5252] text-mjtext font-bold py-3 rounded-xl text-sm transition">
                     BATAL
                 </button>
                 <button type="button" id="btn-submit-join" onclick="submitJoinRoom()" class="w-full bg-mjgreen hover:bg-mjaccent text-white font-bold py-3 rounded-xl text-sm transition btn-shadow flex items-center justify-center space-x-1.5">
@@ -631,24 +634,24 @@
     <!-- MODAL: CATAT SKOR (MULTISTEP)               -->
     <!-- ========================================== -->
     <div id="modal-record" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-mjgreen/20 space-y-5">
+        <div class="bg-mjcard rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-emerald-400/25 space-y-5">
             
             <!-- Modal Header -->
             <div class="flex items-center justify-between border-b border-mjbg pb-3">
                 <div class="flex items-center space-x-2">
                     <span class="text-xl">🀅</span>
-                    <h3 class="font-bold text-mjgreen text-lg">Catat Skor Ronde</h3>
+                    <h3 class="font-bold text-mjtitle text-lg">Catat Skor Ronde</h3>
                 </div>
-                <button onclick="closeRecordModal()" class="text-gray-400 hover:text-gray-600 p-1">
+                <button onclick="closeRecordModal()" class="text-mjmuted/75 hover:text-mjmuted p-1">
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
 
             <!-- Step Indicators -->
             <div class="flex items-center justify-between px-2">
-                <div id="step-dot-1" class="flex-1 text-center font-bold text-xs pb-1 border-b-2 border-mjgreen text-mjgreen">1. Pemenang</div>
-                <div id="step-dot-2" class="flex-1 text-center font-bold text-xs pb-1 border-b-2 border-gray-200 text-gray-400">2. Cara Menang</div>
-                <div id="step-dot-3" class="flex-1 text-center font-bold text-xs pb-1 border-b-2 border-gray-200 text-gray-400">3. Poin</div>
+                <div id="step-dot-1" class="flex-1 text-center font-bold text-xs pb-1 border-b-2 border-emerald-400 text-mjtitle">1. Pemenang</div>
+                <div id="step-dot-2" class="flex-1 text-center font-bold text-xs pb-1 border-b-2 border-emerald-400/20 text-mjmuted/75">2. Cara Menang</div>
+                <div id="step-dot-3" class="flex-1 text-center font-bold text-xs pb-1 border-b-2 border-emerald-400/20 text-mjmuted/75">3. Poin</div>
             </div>
 
             <!-- STEP 1: PILIH PEMENANG -->
@@ -662,25 +665,25 @@
             <!-- STEP 2: TIPE KEMENANGAN & BUANGAN SIAPA -->
             <div id="record-step-2" class="hidden space-y-4">
                 <div class="text-center">
-                    <span class="text-xs bg-mjlight text-mjgreen px-2.5 py-1 rounded-full font-bold" id="selected-winner-badge">Pemenang: Budi</span>
+                    <span class="text-xs bg-mjlight text-mjtitle px-2.5 py-1 rounded-full font-bold" id="selected-winner-badge">Pemenang: Budi</span>
                 </div>
                 <p class="text-sm font-semibold text-center text-mjtext">Pilih Tipe Kemenangan:</p>
                 
                 <div class="grid grid-cols-2 gap-3">
-                    <button onclick="selectWinType('cumo')" class="p-4 rounded-2xl border-2 border-mjgreen/30 hover:border-mjgreen bg-mjbg/50 hover:bg-mjlight flex flex-col items-center justify-center space-y-2 transition">
+                    <button onclick="selectWinType('cumo')" class="p-4 rounded-2xl border-2 border-emerald-400/35 hover:border-emerald-400 bg-mjbg/50 hover:bg-mjlight flex flex-col items-center justify-center space-y-2 transition">
                         <span class="text-2xl">🏆</span>
-                        <span class="font-bold text-mjgreen">Cu Mo</span>
-                        <span class="text-[10px] text-mjtext/70 text-center">Menang Sendiri / Self-Draw</span>
+                        <span class="font-bold text-mjtitle">Cu Mo</span>
+                        <span class="text-[10px] text-mjmuted text-center">Menang Sendiri / Self-Draw</span>
                     </button>
-                    <button onclick="selectWinType('buangan')" class="p-4 rounded-2xl border-2 border-mjgreen/30 hover:border-mjgreen bg-mjbg/50 hover:bg-mjlight flex flex-col items-center justify-center space-y-2 transition">
+                    <button onclick="selectWinType('buangan')" class="p-4 rounded-2xl border-2 border-emerald-400/35 hover:border-emerald-400 bg-mjbg/50 hover:bg-mjlight flex flex-col items-center justify-center space-y-2 transition">
                         <span class="text-2xl">🎯</span>
-                        <span class="font-bold text-mjgreen">Buangan</span>
-                        <span class="text-[10px] text-mjtext/70 text-center">Menang Tile Lemparan</span>
+                        <span class="font-bold text-mjtitle">Buangan</span>
+                        <span class="text-[10px] text-mjmuted text-center">Menang Tile Lemparan</span>
                     </button>
                 </div>
 
                 <!-- Sub-step jika memilih Buangan -->
-                <div id="discard-selector-container" class="hidden pt-2 border-t border-gray-100 space-y-2">
+                <div id="discard-selector-container" class="hidden pt-2 border-t border-emerald-400/15 space-y-2">
                     <p class="text-sm font-semibold text-center text-mjtext">Buangan siapa?</p>
                     <div class="grid grid-cols-3 gap-2" id="discarder-selection-grid">
                         <!-- Dynamic Discarder Buttons -->
@@ -688,7 +691,7 @@
                 </div>
 
                 <div class="flex justify-start pt-2">
-                    <button onclick="goToStep(1)" class="text-xs font-semibold text-gray-500 hover:text-mjgreen flex items-center space-x-1">
+                    <button onclick="goToStep(1)" class="text-xs font-semibold text-mjmuted hover:text-mjtitle flex items-center space-x-1">
                         <i class="fa-solid fa-chevron-left"></i>
                         <span>Kembali</span>
                     </button>
@@ -698,41 +701,41 @@
             <!-- STEP 3: INPUT POIN KEMENANGAN -->
             <div id="record-step-3" class="hidden space-y-4">
                 <div class="text-center space-y-1">
-                    <div class="text-xs bg-mjlight text-mjgreen px-2.5 py-1 rounded-full font-bold inline-block" id="summary-win-type">Cu Mo</div>
+                    <div class="text-xs bg-mjlight text-mjtitle px-2.5 py-1 rounded-full font-bold inline-block" id="summary-win-type">Cu Mo</div>
                 </div>
 
                 <div class="space-y-2">
                     <label class="block text-xs font-bold text-center text-mjtext uppercase tracking-wider">MASUKKAN POIN KEMENANGAN</label>
                     <input type="number" id="win-points-input" min="5" step="1" placeholder="Berapa (台) Tay?" oninput="hidePointsError()"
-                        class="w-full text-center text-2xl font-black py-3 rounded-2xl border-2 border-mjgreen focus:ring-4 focus:ring-mjgreen/20 outline-none bg-mjbg text-mjgreen">
+                        class="w-full text-center text-2xl font-black py-3 rounded-2xl border-2 border-emerald-400 focus:ring-4 focus:ring-emerald-400/25 outline-none bg-mjbg text-mjtitle">
                     <p id="win-points-error" class="hidden text-xs font-semibold text-center text-mjdanger">
                         <i class="fa-solid fa-circle-exclamation mr-1"></i>Minimal 5 tay untuk Hu. Silakan input angka 5 atau lebih.
                     </p>
 
                     <!-- Tombol Cepat Tambah/Kurang Tay -->
                     <div class="grid grid-cols-6 gap-1.5 pt-1">
-                        <button type="button" onclick="adjustWinPoints(-1)" class="py-2.5 bg-white hover:bg-red-50 text-mjdanger border border-mjdanger/30 rounded-xl text-xs font-bold transition active:scale-95 shadow-sm">-1</button>
-                        <button type="button" onclick="adjustWinPoints(-5)" class="py-2.5 bg-white hover:bg-red-50 text-mjdanger border border-mjdanger/30 rounded-xl text-xs font-bold transition active:scale-95 shadow-sm">-5</button>
-                        <button type="button" onclick="adjustWinPoints(-10)" class="py-2.5 bg-white hover:bg-red-50 text-mjdanger border border-mjdanger/30 rounded-xl text-xs font-bold transition active:scale-95 shadow-sm">-10</button>
-                        <button type="button" onclick="adjustWinPoints(10)" class="py-2.5 bg-white hover:bg-mjlight text-mjgreen border border-mjgreen/30 rounded-xl text-xs font-bold transition active:scale-95 shadow-sm">+10</button>
-                        <button type="button" onclick="adjustWinPoints(5)" class="py-2.5 bg-white hover:bg-mjlight text-mjgreen border border-mjgreen/30 rounded-xl text-xs font-bold transition active:scale-95 shadow-sm">+5</button>
-                        <button type="button" onclick="adjustWinPoints(1)" class="py-2.5 bg-white hover:bg-mjlight text-mjgreen border border-mjgreen/30 rounded-xl text-xs font-bold transition active:scale-95 shadow-sm">+1</button>
+                        <button type="button" onclick="adjustWinPoints(-1)" class="py-2.5 bg-mjcard hover:bg-red-950/60 text-mjdanger border border-red-400/40 rounded-xl text-xs font-bold transition active:scale-95 shadow-sm">-1</button>
+                        <button type="button" onclick="adjustWinPoints(-5)" class="py-2.5 bg-mjcard hover:bg-red-950/60 text-mjdanger border border-red-400/40 rounded-xl text-xs font-bold transition active:scale-95 shadow-sm">-5</button>
+                        <button type="button" onclick="adjustWinPoints(-10)" class="py-2.5 bg-mjcard hover:bg-red-950/60 text-mjdanger border border-red-400/40 rounded-xl text-xs font-bold transition active:scale-95 shadow-sm">-10</button>
+                        <button type="button" onclick="adjustWinPoints(10)" class="py-2.5 bg-mjcard hover:bg-mjlight text-mjtitle border border-emerald-400/35 rounded-xl text-xs font-bold transition active:scale-95 shadow-sm">+10</button>
+                        <button type="button" onclick="adjustWinPoints(5)" class="py-2.5 bg-mjcard hover:bg-mjlight text-mjtitle border border-emerald-400/35 rounded-xl text-xs font-bold transition active:scale-95 shadow-sm">+5</button>
+                        <button type="button" onclick="adjustWinPoints(1)" class="py-2.5 bg-mjcard hover:bg-mjlight text-mjtitle border border-emerald-400/35 rounded-xl text-xs font-bold transition active:scale-95 shadow-sm">+1</button>
                     </div>
                 </div>
 
                 <!-- Formula Preview Box -->
-                <div class="bg-mjbg p-3 rounded-xl border border-mjgreen/10 text-xs text-mjtext/80 space-y-1 font-mono" id="formula-preview">
+                <div class="bg-mjbg p-3 rounded-xl border border-emerald-400/15 text-xs text-mjtext/90 space-y-1 font-mono" id="formula-preview">
                     <!-- Dynamic preview message -->
                 </div>
 
                 <!-- TOMBOL BANTU HITUNGKAN TAY (Kuning Full Width) -->
-                <button type="button" onclick="openScorerFromRecord()" class="w-full bg-mjgold hover:bg-amber-600 text-white font-extrabold py-3.5 px-4 rounded-2xl btn-shadow transition duration-200 flex items-center justify-center space-x-2 text-lg tracking-wide border-2 border-amber-600">
-                    <img src="https://raw.githubusercontent.com/budijoe13/skor-mahjong/main/budijoe-pixel.svg" alt="Budi" class="w-7 h-7 shrink-0 object-contain" style="image-rendering: pixelated;">
+                <button type="button" onclick="openScorerFromRecord()" class="w-full bg-mjgold hover:bg-amber-400 text-[#082424] font-extrabold py-3.5 px-4 rounded-2xl btn-shadow transition duration-200 flex items-center justify-center space-x-2 text-lg tracking-wide border-2 border-amber-400">
+                    <img src="https://raw.githubusercontent.com/budijoe/skor-mahjong/main/budijoe-pixel.svg" alt="Budi" class="w-7 h-7 shrink-0 object-contain" style="image-rendering: pixelated;">
                     <span>BUDI, INI DAPAT BERAPA?</span>
                 </button>
 
-                <div class="flex justify-between items-center pt-2 border-t border-gray-100">
-                    <button onclick="goToStep(2)" class="text-xs font-semibold text-gray-500 hover:text-mjgreen flex items-center space-x-1">
+                <div class="flex justify-between items-center pt-2 border-t border-emerald-400/15">
+                    <button onclick="goToStep(2)" class="text-xs font-semibold text-mjmuted hover:text-mjtitle flex items-center space-x-1">
                         <i class="fa-solid fa-chevron-left"></i>
                         <span>Kembali</span>
                     </button>
@@ -750,12 +753,12 @@
     <!-- MODAL OVERLAY: SCORER / KALKULATOR TANGAN  -->
     <!-- ========================================== -->
     <div id="modal-scorer" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
-        <div class="bg-mjbg max-w-lg w-full rounded-3xl shadow-2xl border border-mjgreen/20 overflow-hidden my-auto flex flex-col max-h-[95vh]">
+        <div class="bg-mjbg max-w-lg w-full rounded-3xl shadow-2xl border border-emerald-400/25 overflow-hidden my-auto flex flex-col max-h-[95vh]">
             
             <!-- Scorer Header -->
             <header class="bg-mjgreen text-white py-3.5 px-4 flex items-center justify-between shrink-0 shadow-md">
                 <div class="flex items-center space-x-2.5">
-                    <img src="https://raw.githubusercontent.com/budijoe13/skor-mahjong/main/budijoe-pixel.svg" 
+                    <img src="https://raw.githubusercontent.com/budijoe/skor-mahjong/main/budijoe-pixel.svg" 
                          alt="Budi" 
                          class="w-8 h-8 shrink-0 object-contain" 
                          style="image-rendering: pixelated;">
@@ -775,7 +778,7 @@
             </main>
 
             <!-- Scorer Footer Nav -->
-            <footer id="scorer-footer" class="bg-white border-t border-gray-200 p-3 flex gap-2 shrink-0">
+            <footer id="scorer-footer" class="bg-mjcard border-t border-emerald-400/20 p-3 flex gap-2 shrink-0">
                 <!-- Nav buttons rendered via JavaScript -->
             </footer>
 
@@ -789,27 +792,27 @@
     <!-- MODAL: KONFIRMASI RESET                    -->
     <!-- ========================================== -->
     <div id="modal-reset" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-mjdanger/20 text-center space-y-4">
-            <div class="w-12 h-12 bg-red-100 text-mjdanger rounded-full flex items-center justify-center mx-auto text-xl">
+        <div class="bg-mjcard rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-red-400/30 text-center space-y-4">
+            <div class="w-12 h-12 bg-red-950/70 text-mjdanger rounded-full flex items-center justify-center mx-auto text-xl">
                 <i class="fa-solid fa-triangle-exclamation"></i>
             </div>
             
             <div class="space-y-1">
-                <h3 class="font-bold text-lg text-gray-800">ULANGI DARI AWAL?</h3>
-                <p id="reset-modal-desc" class="text-xs text-gray-500">Semua nama pemain dan riwayat skor akan terhapus dan direset ke 0.</p>
+                <h3 class="font-bold text-lg text-mjtext">ULANGI DARI AWAL?</h3>
+                <p id="reset-modal-desc" class="text-xs text-mjmuted">Semua nama pemain dan riwayat skor akan terhapus dan direset ke 0.</p>
             </div>
 
             <div class="grid grid-cols-2 gap-3 pt-2">
-                <button onclick="closeResetModal()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2.5 rounded-xl text-sm transition">
+                <button onclick="closeResetModal()" class="w-full bg-mjwell hover:bg-[#1D5252] text-mjtext font-bold py-2.5 rounded-xl text-sm transition">
                     TIDAK
                 </button>
-                <button onclick="resetApp()" class="w-full bg-mjdanger hover:bg-red-700 text-white font-bold py-2.5 rounded-xl text-sm transition btn-shadow">
+                <button onclick="resetApp()" class="w-full bg-mjdangerbtn hover:bg-red-700 text-white font-bold py-2.5 rounded-xl text-sm transition btn-shadow">
                     YA, RESET
                 </button>
             </div>
 
-            <div id="reset-leave-room-wrap" class="hidden pt-2 border-t border-gray-100">
-                <button type="button" onclick="closeResetModal(); leaveOnlineRoom();" class="w-full text-xs font-bold text-gray-500 hover:text-mjdanger py-1.5 transition">
+            <div id="reset-leave-room-wrap" class="hidden pt-2 border-t border-emerald-400/15">
+                <button type="button" onclick="closeResetModal(); leaveOnlineRoom();" class="w-full text-xs font-bold text-mjmuted hover:text-mjdanger py-1.5 transition">
                     <i class="fa-solid fa-right-from-bracket mr-1"></i>Keluar dari Room Online
                 </button>
             </div>
@@ -820,11 +823,11 @@
     <!-- MODAL: IMBANG                               -->
     <!-- ========================================== -->
     <div id="modal-draw" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-mjgreen/20 text-center space-y-4">
-            <div class="w-12 h-12 bg-mjlight text-mjgreen rounded-full flex items-center justify-center mx-auto text-xl">
+        <div class="bg-mjcard rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-emerald-400/25 text-center space-y-4">
+            <div class="w-12 h-12 bg-mjlight text-mjtitle rounded-full flex items-center justify-center mx-auto text-xl">
                 <i class="fa-solid fa-handshake"></i>
             </div>
-            <h3 class="font-black text-2xl tracking-wider text-mjgreen">IMBANG</h3>
+            <h3 class="font-black text-2xl tracking-wider text-mjtitle">IMBANG</h3>
             <p class="text-sm font-semibold text-mjtext">Angin Meja: <span id="draw-round-wind"></span></p>
             <div id="draw-player-list" class="bg-mjbg rounded-xl p-3 text-sm space-y-1.5 text-left">
                 <!-- Dynamic player list -->
@@ -839,16 +842,16 @@
     <!-- MODAL: KONFIRMASI PERMAINAN SELESAI         -->
     <!-- ========================================== -->
     <div id="modal-finish" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-mjgold/30 text-center space-y-4">
-            <div class="w-12 h-12 bg-amber-100 text-mjgold rounded-full flex items-center justify-center mx-auto text-xl">
+        <div class="bg-mjcard rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-mjgold/30 text-center space-y-4">
+            <div class="w-12 h-12 bg-amber-950/70 text-mjgold rounded-full flex items-center justify-center mx-auto text-xl">
                 <i class="fa-solid fa-flag-checkered"></i>
             </div>
             <div class="space-y-1">
-                <h3 class="font-bold text-lg text-gray-800">SELESAIKAN PERMAINAN?</h3>
-                <p class="text-xs text-gray-500">Pertandingan akan diakhiri dan skor akhir hari ini ditampilkan.</p>
+                <h3 class="font-bold text-lg text-mjtext">SELESAIKAN PERMAINAN?</h3>
+                <p class="text-xs text-mjmuted">Pertandingan akan diakhiri dan skor akhir hari ini ditampilkan.</p>
             </div>
             <div class="grid grid-cols-2 gap-3 pt-2">
-                <button onclick="closeFinishModal()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2.5 rounded-xl text-sm transition">
+                <button onclick="closeFinishModal()" class="w-full bg-mjwell hover:bg-[#1D5252] text-mjtext font-bold py-2.5 rounded-xl text-sm transition">
                     TIDAK
                 </button>
                 <button onclick="finishGame()" class="w-full bg-mjgreen hover:bg-mjaccent text-white font-bold py-2.5 rounded-xl text-sm transition btn-shadow">
@@ -862,13 +865,13 @@
     <!-- MODAL: PENALTI                              -->
     <!-- ========================================== -->
     <div id="modal-penalty" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-mjdanger/20 text-center space-y-4">
-            <div class="w-12 h-12 bg-red-100 text-mjdanger rounded-full flex items-center justify-center mx-auto text-xl">
+        <div class="bg-mjcard rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-red-400/30 text-center space-y-4">
+            <div class="w-12 h-12 bg-red-950/70 text-mjdanger rounded-full flex items-center justify-center mx-auto text-xl">
                 <i class="fa-solid fa-triangle-exclamation"></i>
             </div>
             <div class="space-y-1">
                 <h3 class="font-black text-2xl tracking-wider text-mjdanger">PENALTI HU KURANG</h3>
-                <p class="text-xs text-gray-500">Penalti akibat deklarasi Hu yang kurang dari 5 poin.</p>
+                <p class="text-xs text-mjmuted">Penalti akibat deklarasi Hu yang kurang dari 5 poin.</p>
             </div>
 
             <div class="space-y-2">
@@ -892,7 +895,7 @@
                 </div>
             </div>
 
-            <div id="penalty-preview" class="hidden bg-red-50 border border-mjdanger/20 rounded-xl p-3 text-left text-xs text-mjtext space-y-0.5">
+            <div id="penalty-preview" class="hidden bg-red-950/45 border border-red-400/30 rounded-xl p-3 text-left text-xs text-mjtext space-y-0.5">
                 <!-- Score change preview -->
             </div>
 
@@ -901,10 +904,10 @@
             </p>
 
             <div class="grid grid-cols-2 gap-3 pt-2">
-                <button onclick="closePenaltyModal()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2.5 rounded-xl text-sm transition">
+                <button onclick="closePenaltyModal()" class="w-full bg-mjwell hover:bg-[#1D5252] text-mjtext font-bold py-2.5 rounded-xl text-sm transition">
                     BATAL
                 </button>
-                <button onclick="submitPenalty()" class="w-full bg-mjdanger hover:bg-red-700 text-white font-bold py-2.5 rounded-xl text-sm transition btn-shadow">
+                <button onclick="submitPenalty()" class="w-full bg-mjdangerbtn hover:bg-red-700 text-white font-bold py-2.5 rounded-xl text-sm transition btn-shadow">
                     OK
                 </button>
             </div>
@@ -915,12 +918,12 @@
     <!-- MODAL: UBAH NAMA PEMAIN                     -->
     <!-- ========================================== -->
     <div id="modal-rename" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-mjgreen/20 text-center space-y-4">
-            <h3 class="font-black text-xl tracking-wider text-mjgreen">MAU UBAH NAMA?</h3>
+        <div class="bg-mjcard rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-emerald-400/25 text-center space-y-4">
+            <h3 class="font-black text-xl tracking-wider text-mjtitle">MAU UBAH NAMA?</h3>
             <input type="text" id="rename-input" maxlength="20" onkeydown="if(event.key==='Enter')saveRename()"
-                class="w-full text-center text-lg font-bold py-3 rounded-2xl border-2 border-mjgreen/40 focus:border-mjgreen focus:ring-4 focus:ring-mjgreen/20 outline-none bg-mjbg text-mjgreen">
+                class="w-full text-center text-lg font-bold py-3 rounded-2xl border-2 border-emerald-400/50 focus:border-emerald-400 focus:ring-4 focus:ring-emerald-400/25 outline-none bg-mjbg text-mjtitle">
             <div class="grid grid-cols-2 gap-3 pt-2">
-                <button onclick="closeRenameModal()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2.5 rounded-xl text-sm transition">BATAL</button>
+                <button onclick="closeRenameModal()" class="w-full bg-mjwell hover:bg-[#1D5252] text-mjtext font-bold py-2.5 rounded-xl text-sm transition">BATAL</button>
                 <button onclick="saveRename()" class="w-full bg-mjgreen hover:bg-mjaccent text-white font-bold py-2.5 rounded-xl text-sm transition btn-shadow">SIMPAN</button>
             </div>
         </div>
@@ -1307,7 +1310,7 @@
 
         function preloadMahjongConfettiImages() {
             if (loadedMahjongTileImages.length > 0) return;
-            const base = "https://raw.githubusercontent.com/budijoe13/skor-mahjong/main/";
+            const base = "https://raw.githubusercontent.com/budijoe/skor-mahjong/main/";
             MAHJONG_CONFETTI_SVGS.forEach(path => {
                 const img = new Image();
                 img.crossOrigin = 'anonymous';
@@ -2097,41 +2100,41 @@
 
                 if (IS_TV_DISPLAY) {
                     const windBadge = isDealer
-                        ? `<div class="w-full bg-mjdanger text-white rounded-2xl py-2.5 px-3 shadow-sm flex items-center justify-center space-x-2.5">
+                        ? `<div class="w-full bg-mjdangerbtn text-white rounded-2xl py-2.5 px-3 shadow-sm flex items-center justify-center space-x-2.5">
                                <span class="text-2xl lg:text-3xl xl:text-4xl font-black leading-none">${WINDS[0].char}</span>
                                <div class="text-left leading-tight">
                                    <span class="block text-xs lg:text-sm xl:text-base font-black uppercase tracking-wider">BANDAR</span>
                                    <span class="block text-[10px] lg:text-xs font-semibold text-white/90">Angin Duduk Timur</span>
                                </div>
                            </div>`
-                        : `<div class="w-full bg-mjbg border border-mjgreen/20 text-mjgreen rounded-2xl py-2.5 px-3 flex items-center justify-center space-x-2.5">
+                        : `<div class="w-full bg-mjbg border border-emerald-400/25 text-mjtitle rounded-2xl py-2.5 px-3 flex items-center justify-center space-x-2.5">
                                <span class="text-2xl lg:text-3xl xl:text-4xl font-black leading-none">${WINDS[seatWind].char}</span>
                                <div class="text-left leading-tight">
                                    <span class="block text-xs lg:text-sm xl:text-base font-extrabold uppercase tracking-wider">${WINDS[seatWind].name}</span>
-                                   <span class="block text-[10px] lg:text-xs font-semibold text-mjgreen/65">Angin Duduk</span>
+                                   <span class="block text-[10px] lg:text-xs font-semibold text-mjmuted">Angin Duduk</span>
                                </div>
                            </div>`;
 
                     const cardBorderClass = isDealer
-                        ? 'border-mjdanger border-4 ring-4 ring-red-100'
-                        : (isLeader ? 'border-mjgold border-4 bg-gradient-to-b from-amber-50/40 to-white' : 'border-mjgreen/20 border-2');
+                        ? 'border-mjdanger border-4 ring-4 ring-red-400/30'
+                        : (isLeader ? 'border-mjgold border-4 bg-gradient-to-b from-amber-500/10 to-mjcard' : 'border-emerald-400/25 border-2');
 
                     const nameEl = editable
-                        ? `<button type="button" onclick="triggerHaptic(20); openRenameModal(${idx})" title="Ketuk untuk ubah nama" class="w-full text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-black text-mjgreen uppercase tracking-wide truncate text-center hover:text-mjaccent transition">
+                        ? `<button type="button" onclick="triggerHaptic(20); openRenameModal(${idx})" title="Ketuk untuk ubah nama" class="w-full text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-black text-mjtitle uppercase tracking-wide truncate text-center hover:text-mjaccent transition">
                                ${idx === 0 ? '<span class="text-mjdanger text-lg xl:text-2xl align-middle" title="East Origin">▲</span> ' : ''}${escapeHtml(player.name)}
                            </button>`
-                        : `<div class="w-full text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-black text-mjgreen uppercase tracking-wide truncate text-center">
+                        : `<div class="w-full text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-black text-mjtitle uppercase tracking-wide truncate text-center">
                                ${idx === 0 ? '<span class="text-mjdanger text-lg xl:text-2xl align-middle" title="East Origin">▲</span> ' : ''}${escapeHtml(player.name)}
                            </div>`;
 
                     container.innerHTML += `
-                        <div class="bg-white rounded-3xl p-5 lg:p-6 xl:p-8 shadow-md ${cardBorderClass} relative flex flex-col justify-between min-h-[245px] lg:min-h-[290px] xl:min-h-[340px] transition-all duration-300">
+                        <div class="bg-mjcard rounded-3xl p-5 lg:p-6 xl:p-8 shadow-md ${cardBorderClass} relative flex flex-col justify-between min-h-[245px] lg:min-h-[290px] xl:min-h-[340px] transition-all duration-300">
                             ${isLeader ? '<span class="absolute -top-3.5 right-4 bg-mjgold text-white text-xs lg:text-sm font-black px-3.5 py-1 rounded-full uppercase tracking-wider shadow"><i class="fa-solid fa-crown mr-1"></i>Memimpin</span>' : ''}
                             <div class="text-center border-b border-mjbg pb-3">
                                 ${nameEl}
                             </div>
                             <div class="my-4 text-center flex-grow flex items-center justify-center">
-                                <div class="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-black ${player.score < 0 ? 'text-mjdanger' : 'text-mjgreen'} tracking-tight leading-none">
+                                <div class="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-black ${player.score < 0 ? 'text-mjdanger' : 'text-mjtitle'} tracking-tight leading-none">
                                     ${player.score > 0 ? '+' + player.score : player.score}
                                 </div>
                             </div>
@@ -2143,28 +2146,28 @@
                 } else {
                     const windBadge = isDealer
                         ? `<span class="inline-flex items-center space-x-1 bg-mjgreen text-white text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider"><span>${WINDS[0].char}</span><span>BANDAR</span></span>`
-                        : `<span class="inline-flex items-center space-x-1 bg-mjbg border border-mjgreen/20 text-mjgreen text-[10px] font-bold px-2 py-0.5 rounded-full"><span>${WINDS[seatWind].char}</span><span>${WINDS[seatWind].name}</span></span>`;
+                        : `<span class="inline-flex items-center space-x-1 bg-mjbg border border-emerald-400/25 text-mjtitle text-[10px] font-bold px-2 py-0.5 rounded-full"><span>${WINDS[seatWind].char}</span><span>${WINDS[seatWind].name}</span></span>`;
 
                     const cardBorderClass = isDealer
-                        ? 'border-mjdanger border-2 ring-2 ring-red-100'
-                        : (isLeader ? 'border-mjgold border-2' : 'border-mjgreen/15 border');
+                        ? 'border-mjdanger border-2 ring-2 ring-red-400/30'
+                        : (isLeader ? 'border-mjgold border-2' : 'border-emerald-400/20 border');
 
                     const nameEl = editable
-                        ? `<button type="button" onclick="triggerHaptic(20); openRenameModal(${idx})" title="Ketuk untuk ubah nama" class="w-full text-sm font-extrabold text-mjgreen uppercase tracking-wide truncate text-center hover:text-mjaccent transition">
+                        ? `<button type="button" onclick="triggerHaptic(20); openRenameModal(${idx})" title="Ketuk untuk ubah nama" class="w-full text-sm font-extrabold text-mjtitle uppercase tracking-wide truncate text-center hover:text-mjaccent transition">
                                ${idx === 0 ? '<span class="text-mjdanger text-xs" title="East Origin">▲</span> ' : ''}${escapeHtml(player.name)}
                            </button>`
-                        : `<div class="w-full text-sm font-extrabold text-mjgreen uppercase tracking-wide truncate text-center">
+                        : `<div class="w-full text-sm font-extrabold text-mjtitle uppercase tracking-wide truncate text-center">
                                ${idx === 0 ? '<span class="text-mjdanger text-xs" title="East Origin">▲</span> ' : ''}${escapeHtml(player.name)}
                            </div>`;
 
                     container.innerHTML += `
-                        <div class="bg-white rounded-2xl p-3.5 shadow-sm ${cardBorderClass} relative flex flex-col justify-between transition-all duration-300">
+                        <div class="bg-mjcard rounded-2xl p-3.5 shadow-sm ${cardBorderClass} relative flex flex-col justify-between transition-all duration-300">
                             ${isLeader ? '<span class="absolute -top-2.5 right-2.5 bg-mjgold text-white text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider shadow-sm"><i class="fa-solid fa-crown mr-0.5"></i>Memimpin</span>' : ''}
                             <div class="text-center border-b border-mjbg pb-1.5">
                                 ${nameEl}
                             </div>
                             <div class="my-2.5 text-center">
-                                <div class="text-3xl sm:text-4xl font-black ${player.score < 0 ? 'text-mjdanger' : 'text-mjgreen'} tracking-tight">
+                                <div class="text-3xl sm:text-4xl font-black ${player.score < 0 ? 'text-mjdanger' : 'text-mjtitle'} tracking-tight">
                                     ${player.score > 0 ? '+' + player.score : player.score}
                                 </div>
                             </div>
@@ -2192,7 +2195,7 @@
             SEAT_ORDER.forEach((idx) => {
                 const player = players[idx];
                 winnerGrid.innerHTML += `
-                    <button onclick="triggerHaptic(20); selectWinner(${idx})" class="p-3.5 rounded-xl border-2 border-mjgreen/20 hover:border-mjgreen bg-mjbg/40 hover:bg-mjlight text-mjgreen font-bold text-sm transition flex items-center justify-between">
+                    <button onclick="triggerHaptic(20); selectWinner(${idx})" class="p-3.5 rounded-xl border-2 border-emerald-400/25 hover:border-emerald-400 bg-mjbg/40 hover:bg-mjlight text-mjtitle font-bold text-sm transition flex items-center justify-between">
                         <span class="truncate">${escapeHtml(player.name)}</span>
                         <i class="fa-solid fa-trophy text-mjgold opacity-0 hover:opacity-100 transition"></i>
                     </button>
@@ -2217,11 +2220,11 @@
             [1, 2, 3].forEach(n => {
                 const dot = document.getElementById(`step-dot-${n}`);
                 if (n === stepNum) {
-                    dot.className = "flex-1 text-center font-bold text-xs pb-1 border-b-2 border-mjgreen text-mjgreen";
+                    dot.className = "flex-1 text-center font-bold text-xs pb-1 border-b-2 border-emerald-400 text-mjtitle";
                 } else if (n < stepNum) {
-                    dot.className = "flex-1 text-center font-semibold text-xs pb-1 border-b-2 border-mjgreen/40 text-mjgreen/70";
+                    dot.className = "flex-1 text-center font-semibold text-xs pb-1 border-b-2 border-emerald-400/50 text-mjmuted";
                 } else {
-                    dot.className = "flex-1 text-center font-semibold text-xs pb-1 border-b-2 border-gray-200 text-gray-400";
+                    dot.className = "flex-1 text-center font-semibold text-xs pb-1 border-b-2 border-emerald-400/20 text-mjmuted/75";
                 }
             });
 
@@ -2249,7 +2252,7 @@
                     const player = players[idx];
                     if (idx === selectedWinnerIndex) return;
                     discarderGrid.innerHTML += `
-                        <button id="discarder-btn-${idx}" onclick="triggerHaptic(20); selectDiscarder(${idx})" class="discarder-btn p-2.5 rounded-xl border border-mjgreen/30 hover:border-mjgreen bg-white text-mjgreen font-semibold text-xs transition truncate">
+                        <button id="discarder-btn-${idx}" onclick="triggerHaptic(20); selectDiscarder(${idx})" class="discarder-btn p-2.5 rounded-xl border border-emerald-400/35 hover:border-emerald-400 bg-mjcard text-mjtitle font-semibold text-xs transition truncate">
                             ${escapeHtml(player.name)}
                         </button>
                     `;
@@ -2264,11 +2267,11 @@
             selectedDiscarderIndex = playerIdx;
             document.querySelectorAll('.discarder-btn').forEach(btn => {
                 btn.classList.remove('bg-mjgreen', 'text-white');
-                btn.classList.add('bg-white', 'text-mjgreen');
+                btn.classList.add('bg-mjcard', 'text-mjtitle');
             });
             const selectedBtn = document.getElementById(`discarder-btn-${playerIdx}`);
             if (selectedBtn) {
-                selectedBtn.classList.remove('bg-white', 'text-mjgreen');
+                selectedBtn.classList.remove('bg-mjcard', 'text-mjtitle');
                 selectedBtn.classList.add('bg-mjgreen', 'text-white');
             }
 
@@ -2285,7 +2288,7 @@
             if (selectedWinType === 'cumo') {
                 badge.innerText = `🏆 ${winnerName} (Cu Mo)`;
                 formulaPreview.innerHTML = `
-                    <div class="font-bold text-mjgreen mb-1">Rumus Cu Mo:</div>
+                    <div class="font-bold text-mjtitle mb-1">Rumus Cu Mo:</div>
                     <div>• Semua pemain lain bayar Tay kali 2</div>
                     <div>• Pemenang (${escapeHtml(winnerName)}) mendapat Tay kali 6</div>
                 `;
@@ -2297,7 +2300,7 @@
                     .join(' dan ');
                 badge.innerText = `🎯 ${winnerName} (Buangan dari ${discarderName})`;
                 formulaPreview.innerHTML = `
-                    <div class="font-bold text-mjgreen mb-1">Rumus Buangan:</div>
+                    <div class="font-bold text-mjtitle mb-1">Rumus Buangan:</div>
                     <div>• Pembuang (${escapeHtml(discarderName)}) bayar Tay kali 2</div>
                     <div>• Pemain lain (${otherNames}) bayar Tay kali 1</div>
                     <div>• Pemenang (${escapeHtml(winnerName)}) mendapat Tay kali 4</div>
@@ -2397,7 +2400,7 @@
         // ==========================================
         // 2. YDSP HAND SCORER MODULE INTEGRATION
         // ==========================================
-        const SVG_MASTER = "https://raw.githubusercontent.com/budijoe13/skor-mahjong/main/";
+        const SVG_MASTER = "https://raw.githubusercontent.com/budijoe/skor-mahjong/main/";
 
         const flowerTiles = [
             { id: 'f_red_1', name: '1 Merah', code: 'red1', img: SVG_MASTER + 'svg/35-spring.svg' },
@@ -2575,23 +2578,23 @@
             ];
 
             let optionsHtml = ways.map(w => `
-                <div class="option-card bg-white border-2 ${scorerState.winWay === w.id ? 'border-mjgreen bg-mjlight' : 'border-gray-200'} rounded-2xl p-3 mb-2 flex items-center cursor-pointer transition" onclick="triggerHaptic(20); selectScorerWinWay('${w.id}')">
+                <div class="option-card bg-mjcard border-2 ${scorerState.winWay === w.id ? 'border-emerald-400 bg-mjlight' : 'border-emerald-400/20'} rounded-2xl p-3 mb-2 flex items-center cursor-pointer transition" onclick="triggerHaptic(20); selectScorerWinWay('${w.id}')">
                     <input type="radio" name="winway" ${scorerState.winWay === w.id ? 'checked' : ''} class="mr-3 accent-mjgreen">
                     <div>
-                        <div class="text-sm font-bold text-mjgreen">${w.label}</div>
-                        <div class="text-xs text-gray-500">${w.desc}</div>
+                        <div class="text-sm font-bold text-mjtitle">${w.label}</div>
+                        <div class="text-xs text-mjmuted">${w.desc}</div>
                     </div>
                 </div>
             `).join('');
 
             content.innerHTML = `
-                <div class="text-sm font-bold text-mjgreen mb-1 pb-1 border-b-2 border-mjgold">1. Cara Menang</div>
-                <div class="text-xs text-gray-600 mb-3">Pilih satu cara menang yang didapatkan:</div>
+                <div class="text-sm font-bold text-mjtitle mb-1 pb-1 border-b-2 border-mjgold">1. Cara Menang</div>
+                <div class="text-xs text-mjmuted mb-3">Pilih satu cara menang yang didapatkan:</div>
                 ${optionsHtml}
             `;
 
             footer.innerHTML = `
-                <button class="flex-1 py-3 px-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl text-xs sm:text-sm transition border border-gray-300 flex items-center justify-center space-x-1.5" onclick="closeScorerModal()">
+                <button class="flex-1 py-3 px-3 bg-mjwell hover:bg-[#1D5252] text-mjtext font-bold rounded-xl text-xs sm:text-sm transition border border-emerald-400/25 flex items-center justify-center space-x-1.5" onclick="closeScorerModal()">
                     <i class="fa-solid fa-chevron-left"></i>
                     <span>KEMBALI</span>
                 </button>
@@ -2622,22 +2625,22 @@
             }).join('');
 
             content.innerHTML = `
-                <div class="text-sm font-bold text-mjgreen mb-1 pb-1 border-b-2 border-mjgold">2. Kartu Bunga</div>
-                <div class="text-xs text-gray-600 mb-3">Tap kartu bunga yang Anda miliki (bisa lebih dari 1 atau kosongkan jika tidak ada):</div>
+                <div class="text-sm font-bold text-mjtitle mb-1 pb-1 border-b-2 border-mjgold">2. Kartu Bunga</div>
+                <div class="text-xs text-mjmuted mb-3">Tap kartu bunga yang Anda miliki (bisa lebih dari 1 atau kosongkan jika tidak ada):</div>
                 
-                <div class="text-xs font-bold text-mjgreen mt-2 mb-1.5">🌹 Bunga Merah</div>
+                <div class="text-xs font-bold text-mjtitle mt-2 mb-1.5">🌹 Bunga Merah</div>
                 <div class="grid grid-cols-4 gap-1.5 mb-3">
                     ${renderFlowerCards(redFlowers)}
                 </div>
 
-                <div class="text-xs font-bold text-mjgreen mt-3 mb-1.5">🪻 Bunga Hitam</div>
+                <div class="text-xs font-bold text-mjtitle mt-3 mb-1.5">🪻 Bunga Hitam</div>
                 <div class="grid grid-cols-4 gap-1.5 mb-2">
                     ${renderFlowerCards(blackFlowers)}
                 </div>
             `;
 
             footer.innerHTML = `
-                <button class="flex-1 py-3 px-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl text-xs sm:text-sm transition border border-gray-300 flex items-center justify-center space-x-1.5" onclick="navigateScorerTo(2)">
+                <button class="flex-1 py-3 px-3 bg-mjwell hover:bg-[#1D5252] text-mjtext font-bold rounded-xl text-xs sm:text-sm transition border border-emerald-400/25 flex items-center justify-center space-x-1.5" onclick="navigateScorerTo(2)">
                     <i class="fa-solid fa-chevron-left"></i>
                     <span>KEMBALI</span>
                 </button>
@@ -2685,8 +2688,8 @@
                     }
 
                     setsGridHtml += `
-                        <div class="bg-white border border-gray-200 rounded-xl p-2 flex flex-col items-center justify-between">
-                            <span class="text-[11px] font-bold text-mjgreen mb-1 text-center">Set ${i + 1}</span>
+                        <div class="bg-mjcard border border-emerald-400/20 rounded-xl p-2 flex flex-col items-center justify-between">
+                            <span class="text-[11px] font-bold text-mjtitle mb-1 text-center">Set ${i + 1}</span>
                             <div class="flex gap-1 justify-center my-1">
                                 ${slotsHtml}
                             </div>
@@ -2717,8 +2720,8 @@
                     <div class="grid grid-cols-2 gap-2 mb-2">
                         ${setsGridHtml}
                     </div>
-                    <div class="bg-white border border-gray-200 rounded-xl p-2 flex flex-col items-center justify-center mb-2">
-                        <span class="text-[11px] font-bold text-mjgreen mb-1">Kaki / Ciok (Pair)</span>
+                    <div class="bg-mjcard border border-emerald-400/20 rounded-xl p-2 flex flex-col items-center justify-center mb-2">
+                        <span class="text-[11px] font-bold text-mjtitle mb-1">Kaki / Ciok (Pair)</span>
                         <div class="flex gap-1 justify-center">
                             ${pairSlotsHtml}
                         </div>
@@ -2742,8 +2745,8 @@
                         `;
                     }
                     row1Html += `
-                        <div class="bg-white border border-gray-200 rounded-xl p-1.5 flex flex-col items-center">
-                            <span class="text-[10px] font-bold text-mjgreen mb-1">Pair ${i + 1}</span>
+                        <div class="bg-mjcard border border-emerald-400/20 rounded-xl p-1.5 flex flex-col items-center">
+                            <span class="text-[10px] font-bold text-mjtitle mb-1">Pair ${i + 1}</span>
                             <div class="flex gap-1 justify-center">
                                 ${slotsHtml}
                             </div>
@@ -2768,8 +2771,8 @@
                         `;
                     }
                     row2Html += `
-                        <div class="bg-white border border-gray-200 rounded-xl p-1.5 flex flex-col items-center">
-                            <span class="text-[10px] font-bold text-mjgreen mb-1">Pair ${i + 1}</span>
+                        <div class="bg-mjcard border border-emerald-400/20 rounded-xl p-1.5 flex flex-col items-center">
+                            <span class="text-[10px] font-bold text-mjtitle mb-1">Pair ${i + 1}</span>
                             <div class="flex gap-1 justify-center">
                                 ${slotsHtml}
                             </div>
@@ -2796,18 +2799,18 @@
             `).join('');
 
             content.innerHTML = `
-                <div class="text-sm font-bold text-mjgreen mb-2 pb-1 border-b-2 border-mjgold">3. Masukkan Kartu Pemenang</div>
+                <div class="text-sm font-bold text-mjtitle mb-2 pb-1 border-b-2 border-mjgold">3. Masukkan Kartu Pemenang</div>
                 
-                <div class="flex bg-gray-200 p-1 rounded-xl mb-3">
-                    <button class="flex-1 py-1.5 text-[11px] font-bold rounded-lg ${scorerState.handMode === 'standard' ? 'bg-white text-mjgreen shadow-sm' : 'text-gray-600'}" onclick="triggerHaptic(20); switchHandMode('standard')">Standar (4 Set + Pair)</button>
-                    <button class="flex-1 py-1.5 text-[11px] font-bold rounded-lg ${scorerState.handMode === 'seven_pairs' ? 'bg-white text-mjgreen shadow-sm' : 'text-gray-600'}" onclick="triggerHaptic(20); switchHandMode('seven_pairs')">Tujuh Pair</button>
+                <div class="flex bg-[#1D5252] p-1 rounded-xl mb-3">
+                    <button class="flex-1 py-1.5 text-[11px] font-bold rounded-lg ${scorerState.handMode === 'standard' ? 'bg-mjcard text-mjtitle shadow-sm' : 'text-mjmuted'}" onclick="triggerHaptic(20); switchHandMode('standard')">Standar (4 Set + Pair)</button>
+                    <button class="flex-1 py-1.5 text-[11px] font-bold rounded-lg ${scorerState.handMode === 'seven_pairs' ? 'bg-mjcard text-mjtitle shadow-sm' : 'text-mjmuted'}" onclick="triggerHaptic(20); switchHandMode('seven_pairs')">Tujuh Pair</button>
                 </div>
 
                 ${meldSection}
 
                 <div class="flex justify-between items-center my-2">
-                    <span class="text-xs font-bold text-mjgreen">Pilih Kartu di Bawah:</span>
-                    <button class="bg-mjdanger text-white border-none rounded-lg px-2.5 py-1 text-[10px] font-bold" onclick="triggerHaptic(30); clearAllHandSlots()">
+                    <span class="text-xs font-bold text-mjtitle">Pilih Kartu di Bawah:</span>
+                    <button class="bg-mjdangerbtn text-white border-none rounded-lg px-2.5 py-1 text-[10px] font-bold" onclick="triggerHaptic(30); clearAllHandSlots()">
                         🗑️ HAPUS SEMUA
                     </button>
                 </div>
@@ -2818,7 +2821,7 @@
             `;
 
             footer.innerHTML = `
-                <button class="flex-1 py-3 px-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl text-xs sm:text-sm transition border border-gray-300 flex items-center justify-center space-x-1.5" onclick="navigateScorerTo(3)">
+                <button class="flex-1 py-3 px-3 bg-mjwell hover:bg-[#1D5252] text-mjtext font-bold rounded-xl text-xs sm:text-sm transition border border-emerald-400/25 flex items-center justify-center space-x-1.5" onclick="navigateScorerTo(3)">
                     <i class="fa-solid fa-chevron-left"></i>
                     <span>KEMBALI</span>
                 </button>
@@ -2905,27 +2908,27 @@
             ];
 
             let optionsHtml = specials.map(s => `
-                <div class="option-card bg-white border-2 ${scorerState.specialHand === s.id ? 'border-mjgreen bg-mjlight' : 'border-gray-200'} rounded-2xl p-3 mb-2 flex items-center cursor-pointer transition" onclick="triggerHaptic(20); selectSpecialHand('${s.id}')">
+                <div class="option-card bg-mjcard border-2 ${scorerState.specialHand === s.id ? 'border-emerald-400 bg-mjlight' : 'border-emerald-400/20'} rounded-2xl p-3 mb-2 flex items-center cursor-pointer transition" onclick="triggerHaptic(20); selectSpecialHand('${s.id}')">
                     <input type="radio" name="special" ${scorerState.specialHand === s.id ? 'checked' : ''} class="mr-3 accent-mjgreen">
                     <div>
-                        <div class="text-sm font-bold text-mjgreen">${s.label}</div>
-                        <div class="text-xs text-gray-500">${s.desc}</div>
+                        <div class="text-sm font-bold text-mjtitle">${s.label}</div>
+                        <div class="text-xs text-mjmuted">${s.desc}</div>
                     </div>
                 </div>
             `).join('');
 
             content.innerHTML = `
-                <div class="text-sm font-bold text-mjgreen mb-1 pb-1 border-b-2 border-mjgold">4. Kondisi Spesial</div>
-                <div class="text-xs text-gray-600 mb-3">Pilih Kondisi Spesial jika ada (hanya bisa pilih satu):</div>
+                <div class="text-sm font-bold text-mjtitle mb-1 pb-1 border-b-2 border-mjgold">4. Kondisi Spesial</div>
+                <div class="text-xs text-mjmuted mb-3">Pilih Kondisi Spesial jika ada (hanya bisa pilih satu):</div>
                 ${optionsHtml}
             `;
 
             footer.innerHTML = `
-                <button class="flex-1 py-3 px-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl text-xs sm:text-sm transition border border-gray-300 flex items-center justify-center space-x-1.5" onclick="navigateScorerTo(4)">
+                <button class="flex-1 py-3 px-3 bg-mjwell hover:bg-[#1D5252] text-mjtext font-bold rounded-xl text-xs sm:text-sm transition border border-emerald-400/25 flex items-center justify-center space-x-1.5" onclick="navigateScorerTo(4)">
                     <i class="fa-solid fa-chevron-left"></i>
                     <span>KEMBALI</span>
                 </button>
-                <button class="flex-1 py-3 px-3 bg-mjgold hover:bg-amber-600 text-white font-extrabold rounded-xl text-xs sm:text-sm transition btn-shadow flex items-center justify-center space-x-1.5 border-2 border-amber-600" onclick="navigateScorerTo(6)">
+                <button class="flex-1 py-3 px-3 bg-mjgold hover:bg-amber-400 text-[#082424] font-extrabold rounded-xl text-xs sm:text-sm transition btn-shadow flex items-center justify-center space-x-1.5 border-2 border-amber-400" onclick="navigateScorerTo(6)">
                     <i class="fa-solid fa-calculator"></i>
                     <span>HITUNG NILAI</span>
                 </button>
@@ -2941,9 +2944,9 @@
             const evaluation = calculateScore();
 
             let breakdownItems = evaluation.items.map(item => `
-                <div class="flex justify-between items-center text-xs py-1.5 border-b border-dashed border-gray-200">
-                    <span class="text-gray-700">${item.title}</span>
-                    <span class="font-bold font-mono ${item.pts === 0 ? 'text-mjdanger' : 'text-mjgreen'}">${item.pts >= 0 ? '+' + item.pts : item.pts}</span>
+                <div class="flex justify-between items-center text-xs py-1.5 border-b border-dashed border-emerald-400/20">
+                    <span class="text-mjtext">${item.title}</span>
+                    <span class="font-bold font-mono ${item.pts === 0 ? 'text-mjdanger' : 'text-mjtitle'}">${item.pts >= 0 ? '+' + item.pts : item.pts}</span>
                 </div>
             `).join('');
 
@@ -2951,15 +2954,15 @@
             if (scorerState.selectedFlowers.length > 0) {
                 const sortedFlowers = flowerTiles.filter(fl => scorerState.selectedFlowers.includes(fl.id));
                 let flowerCardsHtml = sortedFlowers.map(fl => `
-                    <div class="bg-amber-50 border border-amber-300 rounded-lg p-1 flex items-center gap-1 text-[10px] font-semibold">
+                    <div class="bg-amber-950/45 border border-amber-400/40 rounded-lg p-1 flex items-center gap-1 text-[10px] font-semibold">
                         <img src="${fl.img}" class="w-5 h-7 object-contain">
                         <span class="${fl.code.startsWith('red') ? 'text-mjdanger font-bold' : ''}">${fl.name}</span>
                     </div>
                 `).join('');
 
                 flowersVisualHtml = `
-                    <div class="text-[11px] font-bold text-mjgreen mb-1">🌸 Kartu Bunga (${scorerState.selectedFlowers.length})</div>
-                    <div class="flex flex-wrap gap-1.5 mb-3 pb-2 border-b border-dashed border-gray-200">
+                    <div class="text-[11px] font-bold text-mjtitle mb-1">🌸 Kartu Bunga (${scorerState.selectedFlowers.length})</div>
+                    <div class="flex flex-wrap gap-1.5 mb-3 pb-2 border-b border-dashed border-emerald-400/20">
                         ${flowerCardsHtml}
                     </div>
                 `;
@@ -2970,7 +2973,7 @@
                 let groupsHtml = scorerState.standardMelds.map((m, idx) => {
                     const isPair = idx === 4;
                     const statusText = isPair ? 'Kaki' : (m.isOpen ? 'Terbuka' : 'Tertutup');
-                    const badgeClass = m.isOpen ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700';
+                    const badgeClass = m.isOpen ? 'bg-sky-950/80 text-sky-300 border border-sky-400/30' : 'bg-emerald-950/80 text-emerald-300 border border-emerald-400/30';
 
                     let tilesImgHtml = m.tiles.map(tId => {
                         if (!tId) return '';
@@ -2982,7 +2985,7 @@
                     }).join('');
 
                     return `
-                        <div class="bg-gray-50 border border-gray-300 rounded-lg p-1.5 flex flex-col items-center">
+                        <div class="bg-mjwell border border-emerald-400/25 rounded-lg p-1.5 flex flex-col items-center">
                             <span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded ${badgeClass} mb-1 uppercase">${statusText}</span>
                             <div class="flex gap-0.5">
                                 ${tilesImgHtml}
@@ -2993,8 +2996,8 @@
 
                 handSetsVisualHtml = `
                     <div class="flex items-baseline gap-2">
-                        <span class="text-[16px] font-bold text-mjgreen mb-1">🀅</span>
-                        <span class="text-[11px] font-bold text-mjgreen mb-1">Kartu Tangan Hu</span>
+                        <span class="text-[16px] font-bold text-mjtitle mb-1">🀅</span>
+                        <span class="text-[11px] font-bold text-mjtitle mb-1">Kartu Tangan Hu</span>
                     </div>
                     <div class="flex flex-wrap gap-1.5">
                         ${groupsHtml}
@@ -3012,8 +3015,8 @@
                     }).join('');
 
                     return `
-                        <div class="bg-gray-50 border border-gray-300 rounded-lg p-1.5 flex flex-col items-center">
-                            <span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-green-100 text-green-700 mb-1 uppercase">Pair ${idx + 1}</span>
+                        <div class="bg-mjwell border border-emerald-400/25 rounded-lg p-1.5 flex flex-col items-center">
+                            <span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-emerald-950/80 text-emerald-300 border border-emerald-400/30 mb-1 uppercase">Pair ${idx + 1}</span>
                             <div class="flex gap-0.5">
                                 ${tilesImgHtml}
                             </div>
@@ -3023,8 +3026,8 @@
 
                 handSetsVisualHtml = `
                     <div class="flex items-baseline gap-2">
-                        <span class="text-[16px] font-bold text-mjgreen mb-1">🀅</span>
-                        <span class="text-[11px] font-bold text-mjgreen mb-1">Kartu Tangan Hu</span>
+                        <span class="text-[16px] font-bold text-mjtitle mb-1">🀅</span>
+                        <span class="text-[11px] font-bold text-mjtitle mb-1">Kartu Tangan Hu</span>
                     </div>
                     <div class="flex flex-wrap gap-1.5">
                         ${pairsHtml}
@@ -3036,28 +3039,28 @@
             const prevalentWindLabel = windNamesMap[scorerState.prevalentWind] || '東 1';
 
             content.innerHTML = `
-                <div class="sticky top-0 z-20 bg-mjbg pt-1 pb-3 -mt-4 -mx-4 px-4 border-b border-gray-200/80 shadow-sm space-y-2">
-                    <div class="text-sm font-bold text-mjgreen border-b-2 border-mjgold pb-1">Hasil Perhitungan Score</div>
+                <div class="sticky top-0 z-20 bg-mjbg pt-1 pb-3 -mt-4 -mx-4 px-4 border-b border-emerald-400/20 shadow-sm space-y-2">
+                    <div class="text-sm font-bold text-mjtitle border-b-2 border-mjgold pb-1">Hasil Perhitungan Score</div>
                     
                     <div id="finalScoreBox" onclick="triggerScoreCelebration(${evaluation.totalScore}, true)" title="Ketuk untuk memutar ulang animasi" class="bg-mjgreen text-white rounded-2xl p-3 text-center shadow-md cursor-pointer select-none active:scale-[0.99] transition-transform">
                         <div class="text-[11px] font-semibold uppercase tracking-wider text-white">TOTAL NILAI KEMENANGAN</div>
                         <div class="text-3xl font-black text-mjgold my-0.5"><span id="finalScoreVal">0</span> <span class="text-base text-white font-bold">Tay</span></div>
                     </div>
 
-                    <div class="bg-white rounded-xl p-2 text-xs font-bold text-mjgreen flex justify-around text-center border border-gray-300">
+                    <div class="bg-mjcard rounded-xl p-2 text-xs font-bold text-mjtitle flex justify-around text-center border border-emerald-400/25">
                         <div>Angin Duduk: <span class="text-mjaccent font-extrabold">${seatWindLabel}</span></div>
                         <div>Angin Meja: <span class="text-mjaccent font-extrabold">${prevalentWindLabel}</span></div>
                     </div>
                 </div>
 
                 <div class="space-y-3 pt-3">
-                    <div class="bg-white rounded-xl border border-gray-300 p-3 space-y-2">
+                    <div class="bg-mjcard rounded-xl border border-emerald-400/25 p-3 space-y-2">
                         ${flowersVisualHtml}
                         ${handSetsVisualHtml}
                     </div>
 
-                    <div class="bg-white rounded-xl border border-gray-300 p-3">
-                        <div class="text-xs font-bold text-mjgreen mb-2 border-b border-gray-100 pb-1">RINCIAN POIN:</div>
+                    <div class="bg-mjcard rounded-xl border border-emerald-400/25 p-3">
+                        <div class="text-xs font-bold text-mjtitle mb-2 border-b border-emerald-400/15 pb-1">RINCIAN POIN:</div>
                         ${breakdownItems}
                     </div>
                 </div>
@@ -3065,16 +3068,16 @@
 
             footer.innerHTML = `
                 <div class="flex flex-col gap-2 w-full">
-                    <button class="w-full bg-mjgreen hover:bg-mjaccent text-white font-extrabold py-3.5 rounded-xl text-sm transition btn-shadow flex items-center justify-center space-x-2 border-2 border-mjgreen" onclick="triggerHaptic(40); completeScorerCalculation(${evaluation.totalScore})">
+                    <button class="w-full bg-mjgreen hover:bg-mjaccent text-white font-extrabold py-3.5 rounded-xl text-sm transition btn-shadow flex items-center justify-center space-x-2 border-2 border-emerald-400" onclick="triggerHaptic(40); completeScorerCalculation(${evaluation.totalScore})">
                         <i class="fa-solid fa-check text-base"></i>
                         <span>SELESAI</span>
                     </button>
                     <div class="grid grid-cols-2 gap-2">
-                        <button class="flex-1 py-2.5 px-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl text-xs transition border border-gray-300 flex items-center justify-center space-x-1" onclick="navigateScorerTo(5)">
+                        <button class="flex-1 py-2.5 px-3 bg-mjwell hover:bg-[#1D5252] text-mjtext font-bold rounded-xl text-xs transition border border-emerald-400/25 flex items-center justify-center space-x-1" onclick="navigateScorerTo(5)">
                             <i class="fa-solid fa-chevron-left"></i>
                             <span>KEMBALI</span>
                         </button>
-                        <button class="flex-1 py-2.5 px-3 bg-mjdanger hover:bg-red-700 text-white font-bold rounded-xl text-xs transition btn-shadow flex items-center justify-center space-x-1" onclick="navigateScorerTo(2)">
+                        <button class="flex-1 py-2.5 px-3 bg-mjdangerbtn hover:bg-red-700 text-white font-bold rounded-xl text-xs transition btn-shadow flex items-center justify-center space-x-1" onclick="navigateScorerTo(2)">
                             <i class="fa-solid fa-rotate-right"></i>
                             <span>HITUNG LAGI</span>
                         </button>
@@ -3646,7 +3649,7 @@
 
             document.getElementById('draw-round-wind').innerText = formatWind(roundWind);
             document.getElementById('draw-player-list').innerHTML = players.map(p => `
-                <div class="flex justify-between font-semibold text-mjgreen">
+                <div class="flex justify-between font-semibold text-mjtitle">
                     <span class="truncate">${escapeHtml(p.name)}</span>
                     <span>= +0</span>
                 </div>
@@ -3739,7 +3742,7 @@
             document.getElementById('final-rounds').innerText = roundHistory.filter(r => r.winType !== 'penalti' || r.endsRound).length;
 
             const sorted = [...players].sort((a, b) => b.score - a.score);
-            const medal = ['bg-mjgold text-white', 'bg-gray-400 text-white', 'bg-amber-700 text-white', 'bg-mjgreen/15 text-mjgreen'];
+            const medal = ['bg-mjgold text-white', 'bg-slate-500 text-white', 'bg-amber-700 text-white', 'bg-mjgreen/15 text-mjtitle'];
             const totalPlayers = sorted.length;
 
             document.getElementById('final-ranking').innerHTML = sorted.map((player, i) => {
@@ -3751,13 +3754,13 @@
 
                 return `
                     <div style="animation-delay: ${staggerDelay.toFixed(1)}s"
-                         class="flex items-center rounded-2xl p-4 shadow-sm border ${celebrate ? 'podium-reveal' : ''} ${isTop ? 'champion-card champion-shimmer border-mjgold border-2' : 'bg-white border-mjgreen/15'}">
+                         class="flex items-center rounded-2xl p-4 shadow-sm border ${celebrate ? 'podium-reveal' : ''} ${isTop ? 'champion-card champion-shimmer border-mjgold border-2' : 'bg-mjcard border-emerald-400/20'}">
                         <div class="w-10 h-10 rounded-full flex items-center justify-center font-black text-lg ${medal[rank - 1]} shrink-0 shadow-sm">${rank}</div>
-                        <div class="final-name flex-1 min-w-0 px-3 py-0.5 font-bold text-mjgreen text-lg leading-normal truncate flex items-center gap-1.5">
+                        <div class="final-name flex-1 min-w-0 px-3 py-0.5 font-bold text-mjtitle text-lg leading-normal truncate flex items-center gap-1.5">
                             ${isTop ? '<span class="crown-badge text-xl leading-none">👑</span>' : ''}
                             <span class="truncate">${escapeHtml(player.name)}</span>
                         </div>
-                        <div ${isFirstCard ? 'id="champion-score-val"' : ''} class="text-2xl sm:text-3xl font-black tracking-tight ${player.score < 0 ? 'text-mjdanger' : 'text-mjgreen'}">
+                        <div ${isFirstCard ? 'id="champion-score-val"' : ''} class="text-2xl sm:text-3xl font-black tracking-tight ${player.score < 0 ? 'text-mjdanger' : 'text-mjtitle'}">
                             ${celebrate && isFirstCard ? '0' : formattedScore}
                         </div>
                     </div>
@@ -3795,7 +3798,7 @@ async function captureFinal() {
                 return null;
             }
             const canvas = await html2canvas(document.getElementById('final-capture'), {
-                backgroundColor: '#F9F5F1',
+                backgroundColor: '#0F3333',
                 scale: Math.max(2, window.devicePixelRatio || 1),
                 useCORS: true,
                 onclone: (doc) => {
@@ -3951,7 +3954,7 @@ async function captureFinal() {
             const editable = canEditGame();
 
             if (roundHistory.length === 0) {
-                container.innerHTML = `<p class="text-xs text-center text-gray-400 py-3 italic">Belum ada skor yang dicatat.</p>`;
+                container.innerHTML = `<p class="text-xs text-center text-mjmuted/75 py-3 italic">Belum ada skor yang dicatat.</p>`;
                 if (undoBtn) undoBtn.classList.add('hidden');
                 return;
             }
@@ -3970,12 +3973,12 @@ async function captureFinal() {
                     : '🎯 Buangan';
 
                 const logHtml = `
-                    <div class="bg-mjbg/60 px-3 py-2 rounded-xl text-xs border border-mjgreen/10 flex flex-col gap-0.5">
-                        <div class="flex items-center justify-between font-bold ${isPenalty ? 'text-mjdanger' : 'text-mjgreen'}">
+                    <div class="bg-mjbg/60 px-3 py-2 rounded-xl text-xs border border-emerald-400/15 flex flex-col gap-0.5">
+                        <div class="flex items-center justify-between font-bold ${isPenalty ? 'text-mjdanger' : 'text-mjtitle'}">
                             <span>R${item.round}: ${escapeHtml(describeRound(item))}</span>
                             <span class="text-[10px] font-semibold bg-mjlight px-2 py-0.5 rounded-full shrink-0 ml-1">${typeof item.roundWind === 'number' ? WINDS[item.roundWind].char + ' · ' : ''}${typeLabel}</span>
                         </div>
-                        <div class="text-[11px] text-gray-500 font-mono truncate">${escapeHtml(changes)}</div>
+                        <div class="text-[11px] text-mjmuted font-mono truncate">${escapeHtml(changes)}</div>
                     </div>
                 `;
                 container.innerHTML += logHtml;
@@ -4030,7 +4033,7 @@ async function captureFinal() {
         }
 
         function penaltyOptionClass(selected) {
-            return `p-3 rounded-xl border-2 font-bold text-sm transition truncate ${selected ? 'border-mjdanger bg-mjdanger text-white' : 'border-mjgreen/20 hover:border-mjdanger bg-mjbg/40 text-mjgreen'}`;
+            return `p-3 rounded-xl border-2 font-bold text-sm transition truncate ${selected ? 'border-mjdanger bg-mjdangerbtn text-white' : 'border-emerald-400/25 hover:border-mjdanger bg-mjbg/40 text-mjtitle'}`;
         }
 
         function renderPenaltyModal() {
@@ -4056,7 +4059,7 @@ async function captureFinal() {
             document.getElementById('penalty-discarder-grid').innerHTML = SEAT_ORDER.map((idx) => {
                 if (idx === selectedPenaltyIndex) {
                     return `
-                        <div class="p-3 rounded-xl border border-dashed border-gray-200 bg-gray-50 text-gray-300 font-semibold text-xs text-center truncate">
+                        <div class="p-3 rounded-xl border border-dashed border-emerald-400/20 bg-mjwell text-mjmuted/40 font-semibold text-xs text-center truncate">
                             ${escapeHtml(players[idx].name)} <span class="text-[9px] uppercase">(Penalti)</span>
                         </div>
                     `;
@@ -4073,7 +4076,7 @@ async function captureFinal() {
             if (deltaScores) {
                 preview.innerHTML = SEAT_ORDER.map(idx => {
                     const ds = deltaScores[idx];
-                    return `<div class="flex justify-between"><span class="truncate">${escapeHtml(players[idx].name)}</span><span class="font-bold font-mono ${ds < 0 ? 'text-mjdanger' : 'text-mjgreen'}">${ds > 0 ? '+' + ds : ds}</span></div>`;
+                    return `<div class="flex justify-between"><span class="truncate">${escapeHtml(players[idx].name)}</span><span class="font-bold font-mono ${ds < 0 ? 'text-mjdanger' : 'text-mjtitle'}">${ds > 0 ? '+' + ds : ds}</span></div>`;
                 }).join('');
                 preview.classList.remove('hidden');
             } else {
