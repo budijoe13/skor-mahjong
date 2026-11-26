@@ -7,8 +7,8 @@
   "start_url": "/skor-mahjong/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#F9F5F1",
-  "theme_color": "#08403C",
+  "background_color": "#0F3333",
+  "theme_color": "#0A2626",
   "icons": [
     {
       "src": "/skor-mahjong/icon-192.png",
